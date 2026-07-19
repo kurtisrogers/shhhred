@@ -27,7 +27,7 @@ export function createPlayerMountKey(
   selectedModelName: string,
 ): string {
   if (initState === 'ready') {
-    return NAM_PLAYER_ID
+    return `${NAM_PLAYER_ID}::${selectedDemoInputName}`
   }
 
   return `${selectedDemoInputName}::${selectedModelName}`

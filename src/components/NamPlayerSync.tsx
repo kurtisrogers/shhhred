@@ -45,7 +45,8 @@ export function NamPlayerSync({
   } = useT3kPlayerContext()
 
   const audioReady = audioState.initState === 'ready' && audioState.audioUrl !== null
-  const syncTokenRef = useRef(0)
+  const engineSyncTokenRef = useRef(0)
+  const trackSyncTokenRef = useRef(0)
   const playbackRef = useRef(false)
   const loadedAudioUrlRef = useRef(audioState.audioUrl)
 
@@ -81,7 +82,7 @@ export function NamPlayerSync({
     const wasPlaying = playbackRef.current
     const engineReloadNeeded = modelChanged || irChanged || reverbChanged
     const showLoading = engineReloadNeeded
-    const token = ++syncTokenRef.current
+    const token = ++engineSyncTokenRef.current
 
     prevEngineSettingsRef.current = {
       modelName: selectedModelName,
@@ -127,7 +128,7 @@ export function NamPlayerSync({
           setBypass(effects.bypass)
         }
 
-        if (cancelled || token !== syncTokenRef.current) {
+        if (cancelled || token !== engineSyncTokenRef.current) {
           return
         }
       } catch (error) {
@@ -136,7 +137,7 @@ export function NamPlayerSync({
           onSyncError?.('Failed to update the amp engine. Try play again.')
         }
       } finally {
-        if (!cancelled && token === syncTokenRef.current && showLoading) {
+        if (!cancelled && token === engineSyncTokenRef.current && showLoading) {
           onSyncLoadingChange?.({ loading: false, reason: null })
         }
       }
@@ -176,7 +177,7 @@ export function NamPlayerSync({
     }
 
     const wasPlaying = playbackRef.current
-    const token = ++syncTokenRef.current
+    const token = ++trackSyncTokenRef.current
 
     prevDemoInputRef.current = selectedDemoInputName
 
@@ -198,7 +199,7 @@ export function NamPlayerSync({
 
         await loadAudio(input.url)
 
-        if (cancelled || token !== syncTokenRef.current) {
+        if (cancelled || token !== trackSyncTokenRef.current) {
           return
         }
 
@@ -222,7 +223,7 @@ export function NamPlayerSync({
           onSyncError?.(`Could not load “${input.name}”. Try another track.`)
         }
       } finally {
-        if (!cancelled && token === syncTokenRef.current) {
+        if (!cancelled && token === trackSyncTokenRef.current) {
           onSyncLoadingChange?.({ loading: false, reason: null })
         }
       }

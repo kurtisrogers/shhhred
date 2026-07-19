@@ -6,10 +6,14 @@ import {
 } from './demoPlayerEngine'
 
 describe('createPlayerMountKey', () => {
-  it('keeps a stable key after the engine is ready', () => {
+  it('remounts the player when the selected track changes after init', () => {
     expect(
       createPlayerMountKey('ready', 'Metalcore - Guitar', 'Vox AC10'),
-    ).toBe(NAM_PLAYER_ID)
+    ).toBe(`${NAM_PLAYER_ID}::Metalcore - Guitar`)
+
+    expect(
+      createPlayerMountKey('ready', 'Mayer - Guitar', 'Vox AC10'),
+    ).toBe(`${NAM_PLAYER_ID}::Mayer - Guitar`)
   })
 
   it('remounts before init when amp or track selection changes', () => {
