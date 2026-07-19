@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useT3kPlayerContext } from 'neural-amp-modeler-wasm'
 import {
+  evaluatePlaybackHealth,
+  type PlaybackHealth,
+} from '../lib/demoPlaybackHealth'
+import {
   formatPlaybackTime,
   getPlaybackPhaseLabel,
   resolveDemoPlaybackStatus,
@@ -28,6 +32,9 @@ export function DemoPlaybackStatus({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [audioEnded, setAudioEnded] = useState(false)
+  const [audioPaused, setAudioPaused] = useState(true)
+  const [outputGainValue, setOutputGainValue] = useState(0)
+  const [audioContextState, setAudioContextState] = useState<AudioContextState>()
 
   useEffect(() => {
     const audioElement = getAudioNodes().audioElement
@@ -39,9 +46,18 @@ export function DemoPlaybackStatus({
       setCurrentTime(audioElement.currentTime)
       setDuration(Number.isFinite(audioElement.duration) ? audioElement.duration : 0)
       setAudioEnded(audioElement.ended)
+      setAudioPaused(audioElement.paused)
     }
 
     syncTimes()
+
+    const syncGain = () => {
+      const nodes = getAudioNodes()
+      setOutputGainValue(nodes.outputGainNode?.gain.value ?? 0)
+      setAudioContextState(nodes.audioContext?.state)
+    }
+
+    syncGain()
 
     audioElement.addEventListener('timeupdate', syncTimes)
     audioElement.addEventListener('durationchange', syncTimes)
@@ -50,6 +66,8 @@ export function DemoPlaybackStatus({
     audioElement.addEventListener('pause', syncTimes)
     audioElement.addEventListener('play', syncTimes)
 
+    const gainInterval = window.setInterval(syncGain, 200)
+
     return () => {
       audioElement.removeEventListener('timeupdate', syncTimes)
       audioElement.removeEventListener('durationchange', syncTimes)
@@ -57,12 +75,21 @@ export function DemoPlaybackStatus({
       audioElement.removeEventListener('ended', syncTimes)
       audioElement.removeEventListener('pause', syncTimes)
       audioElement.removeEventListener('play', syncTimes)
+      window.clearInterval(gainInterval)
     }
   }, [
     audioState.audioUrl,
     audioState.initState,
     getAudioNodes,
   ])
+
+  const playbackHealth: PlaybackHealth = evaluatePlaybackHealth({
+    isPlaying: audioState.isPlaying,
+    isActivePlayer: audioState.activePlayerId === NAM_PLAYER_ID,
+    audioContextState,
+    outputGainValue,
+    audioPaused,
+  })
 
   const status = useMemo(
     () =>
@@ -106,6 +133,7 @@ export function DemoPlaybackStatus({
       className={`demo-playback-status demo-playback-status--${status.phase}`}
       data-testid="demo-playback-status"
       data-phase={status.phase}
+      data-playback-health={playbackHealth}
       aria-live="polite"
     >
       <div className="demo-playback-status__header">

@@ -40,13 +40,36 @@ Feature: Shhhred Studio
     When I start demo playback
     And I select the amp model "Fender Deluxe Reverb"
     Then demo playback should be active
+    And demo playback should be audible
     And the demo playback status should be "Playing"
+
+  Scenario: Swap cabinet IR during demo playback
+    When I start demo playback
+    And I select the cabinet IR "EMT 140 Plate"
+    Then demo playback should be active
+    And demo playback should be audible
+
+  Scenario: Rapid amp swaps during demo playback
+    When I start demo playback
+    And I select the amp model "Fender Deluxe Reverb"
+    And I select the amp model "Peavey 5150 Block Letter (Boosted)"
+    And I select the amp model "Marshall JCM2000 Crunch"
+    Then demo playback should be active
+    And demo playback should be audible
 
   Scenario: Swap demo track during playback
     When I start demo playback
     And I select the demo track "Metalcore - Guitar"
     Then demo playback should be active
+    And demo playback should be audible
     And the demo audio source should contain "metalcore-guitar.wav"
+
+  Scenario: Swap amp and track during playback
+    When I start demo playback
+    And I select the demo track "Metalcore - Guitar"
+    And I select the amp model "Peavey 5150 Block Letter (Boosted)"
+    Then demo playback should be active
+    And demo playback should be audible
 
   Scenario: Demo track library is available
     Then I should see 15 demo tracks
