@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
 import { AmbientBackground } from './components/AmbientBackground'
+import { CountdownOverlay } from './components/CountdownOverlay'
 import { FactoryPresetPicker } from './components/FactoryPresetPicker'
+import { JamSessionPanel } from './components/JamSessionPanel'
 import { Knob } from './components/Knob'
 import { MidiPanel } from './components/MidiPanel'
 import { NamPlayer } from './components/NamPlayer'
@@ -14,6 +16,7 @@ import {
   FACTORY_PRESETS,
   type FactoryPreset,
 } from './data/factoryPresets'
+import { useJamSession } from './hooks/useJamSession'
 import { useMidi } from './hooks/useMidi'
 import { createPreset, downloadPreset } from './lib/presets'
 import {
@@ -44,6 +47,7 @@ function App() {
   const [factoryPresetId, setFactoryPresetId] = useState(initial.factoryPresetId)
   const [midiMappings] = useState(DEFAULT_MIDI_MAPPINGS)
   const [isPlaying, setIsPlaying] = useState(false)
+  const jam = useJamSession()
 
   const handleMidiCc = useCallback((nextEffects: EffectSettings) => {
     setEffects(nextEffects)
@@ -54,6 +58,7 @@ function App() {
     mappings: midiMappings,
     effects,
     onCc: handleMidiCc,
+    onNote: jam.handleMidiNote,
   })
 
   const updateEffect = (key: keyof EffectSettings, value: number | boolean) => {
@@ -101,6 +106,7 @@ function App() {
   return (
     <div className="app" data-testid="studio-app">
       <AmbientBackground />
+      <CountdownOverlay remaining={jam.countdownRemaining} />
 
       <header className="hero">
         <div className="hero__copy">
@@ -150,6 +156,7 @@ function App() {
             }}
             onDemoStart={() => setIsPlaying(true)}
             onLiveStart={() => setIsPlaying(true)}
+            onRegisterAudioTap={jam.registerNamAudioTap}
           />
 
           <div className="model-selectors model-selectors--three">
@@ -249,6 +256,21 @@ function App() {
             <span>Bypass amp modeling</span>
           </label>
         </section>
+
+        <JamSessionPanel
+          phase={jam.phase}
+          countdownRemaining={jam.countdownRemaining}
+          settings={jam.settings}
+          recordingSeconds={jam.recordingSeconds}
+          isRecording={jam.isRecording}
+          isDrumsPlaying={jam.isDrumsPlaying}
+          onSettingsChange={jam.updateSettings}
+          onArm={jam.armSession}
+          onDisarm={jam.disarmSession}
+          onStopDrums={jam.stopDrums}
+          onStartRecording={() => void jam.startRecording()}
+          onStopRecording={(filename) => void jam.stopRecording(filename)}
+        />
 
         <MidiPanel
           supported={midi.supported}

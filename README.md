@@ -9,7 +9,7 @@ A glam browser-based guitar studio powered by [Neural Amp Modeler (NAM)](https:/
 - **Live guitar input** — play through NAM amp models in real time via your audio interface
 - **Demo player** — audition tones instantly with pre-recorded guitar DI tracks
 - **Neural amp modeling** — 12 amp models including Peavey 5150, 6505+, JCM2000, Mesa Mark IV, Soldano, ENGL, and more
-- **Classic presets** — one-click factory tones for metal and rock rigs
+- **Jam session** — MIDI-triggered countdown, drum backing tracks, and multi-format recording
 - **Cabinet IRs** — Celestion 4x12 and EMT 140 plate reverb impulse responses
 - **MIDI control** — map CC messages to gain, tone, reverb, and master volume
 - **Preset save/load** — download and reload `.shhhred.json` preset files

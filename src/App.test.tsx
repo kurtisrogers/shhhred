@@ -19,6 +19,31 @@ vi.mock('./components/NamPlayer', () => ({
   ),
 }))
 
+vi.mock('./hooks/useJamSession', () => ({
+  useJamSession: () => ({
+    phase: 'idle',
+    countdownRemaining: null,
+    settings: {
+      countdownSeconds: 5,
+      drumTrackId: 'metal-thrash-140',
+      drumVolume: 0.7,
+      recordingFormat: 'wav',
+      autoRecord: true,
+    },
+    recordingSeconds: 0,
+    isDrumsPlaying: false,
+    isRecording: false,
+    updateSettings: vi.fn(),
+    armSession: vi.fn(),
+    disarmSession: vi.fn(),
+    handleMidiNote: vi.fn(),
+    stopDrums: vi.fn(),
+    startRecording: vi.fn(),
+    stopRecording: vi.fn(),
+    registerNamAudioTap: vi.fn(),
+  }),
+}))
+
 vi.mock('./hooks/useMidi', () => ({
   useMidi: () => ({
     supported: true,
@@ -45,6 +70,7 @@ describe('App', () => {
     expect(screen.getByTestId('tone-sculpt')).toBeInTheDocument()
     expect(screen.getByTestId('midi-panel')).toBeInTheDocument()
     expect(screen.getByTestId('preset-panel')).toBeInTheDocument()
+    expect(screen.getByTestId('jam-panel')).toBeInTheDocument()
     expect(screen.getByTestId('demo-input-select')).toBeInTheDocument()
   })
 

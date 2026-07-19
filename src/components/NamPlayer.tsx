@@ -15,6 +15,12 @@ import {
   type NonEmptyArray,
 } from '../data/catalog'
 import type { EffectSettings } from '../types/preset'
+import { NamAudioBridge } from './NamAudioBridge'
+
+interface NamAudioTap {
+  audioContext: AudioContext
+  connectToRecorder: (destination: AudioNode) => () => void
+}
 
 interface NamPlayerProps {
   selectedModelName: string
@@ -26,6 +32,7 @@ interface NamPlayerProps {
   onDemoInputChange: (name: string) => void
   onDemoStart: () => void
   onLiveStart: () => void
+  onRegisterAudioTap?: (tap: NamAudioTap | null) => void
 }
 
 export function NamPlayer({
@@ -38,6 +45,7 @@ export function NamPlayer({
   onDemoInputChange,
   onDemoStart,
   onLiveStart,
+  onRegisterAudioTap,
 }: NamPlayerProps) {
   const models = useMemo((): NonEmptyArray<Model> => {
     return AMP_MODELS.map((model) => ({
@@ -78,6 +86,9 @@ export function NamPlayer({
 
   return (
     <T3kPlayerProvider>
+      {onRegisterAudioTap && (
+        <NamAudioBridge onRegister={onRegisterAudioTap} />
+      )}
       <div className="nam-player-shell" data-testid="nam-player">
         <T3kPlayer
           models={models}

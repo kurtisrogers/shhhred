@@ -231,6 +231,74 @@
   grid-column: span 5;
 }
 
+.jam-panel {
+  grid-column: span 6;
+}
+
+.jam-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.jam-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.countdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 8, 18, 0.72);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.countdown-overlay__pulse {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 45, 149, 0.35), transparent 70%);
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+.countdown-overlay__label {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.countdown-overlay__value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(5rem, 18vw, 10rem);
+  line-height: 1;
+  background: linear-gradient(90deg, #ff2d95, #7b2fff, #00f5d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes countdown-pulse {
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
 .midi-panel,
 .preset-panel {
   grid-column: span 6;
@@ -487,6 +555,7 @@
 
   .amp-panel,
   .controls-panel,
+  .jam-panel,
   .midi-panel,
   .preset-panel {
     grid-column: span 12;
@@ -498,6 +567,7 @@
     padding-top: 2rem;
   }
 
+  .jam-controls,
   .model-selectors,
   .model-selectors--three,
   .midi-readout,
