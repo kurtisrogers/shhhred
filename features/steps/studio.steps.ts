@@ -215,9 +215,20 @@ When('I scroll to the amp models section', async ({ page }) => {
   await page.getByTestId('amp-models').scrollIntoViewIfNeeded()
 })
 
+When('I scroll back to the demo player', async ({ page }) => {
+  await page.getByTestId('nam-player').scrollIntoViewIfNeeded()
+})
+
 Then('the mobile sticky player should be visible', async ({ page }) => {
   await expect(page.getByTestId('mobile-sticky-player')).toHaveAttribute(
     'data-visible',
     'true',
+  )
+})
+
+Then('the mobile sticky player should be hidden', async ({ page }) => {
+  await expect(page.getByTestId('mobile-sticky-player')).toHaveAttribute(
+    'data-visible',
+    'false',
   )
 })
