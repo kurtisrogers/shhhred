@@ -127,7 +127,7 @@ When('I reset the studio', async ({ page }) => {
 
 When('I start demo playback', async ({ page }) => {
   await page.getByRole('button', { name: /^Demo$/ }).click()
-  await page.getByLabel('Play').click()
+  await page.getByTestId('nam-player').getByLabel('Play').click()
 })
 
 Then('I should see {int} demo tracks', async ({ page }, count: number) => {
@@ -203,4 +203,21 @@ When('I load the preset file', async ({ page }) => {
   }
 
   await page.getByTestId('preset-file-input').setInputFiles(presetFile)
+})
+
+Given('I open Shhhred Studio on a mobile viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await expect(page.getByTestId('studio-app')).toBeVisible()
+})
+
+When('I scroll to the amp models section', async ({ page }) => {
+  await page.getByTestId('amp-models').scrollIntoViewIfNeeded()
+})
+
+Then('the mobile sticky player should be visible', async ({ page }) => {
+  await expect(page.getByTestId('mobile-sticky-player')).toHaveAttribute(
+    'data-visible',
+    'true',
+  )
 })
