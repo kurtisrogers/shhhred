@@ -9,8 +9,10 @@ import { SpectrumVisualizer } from './components/SpectrumVisualizer'
 import {
   CABINET_IR_NAMES,
   DEMO_BASS_INPUTS,
-  DEMO_GUITAR_INPUTS,
+  DEMO_CLEAN_INPUTS,
   DEMO_INPUT_NAMES,
+  DEMO_METAL_INPUTS,
+  DEMO_ROCK_INPUTS,
 } from './data/catalog'
 import type { AmpModel } from './data/catalog'
 import { useMidi } from './hooks/useMidi'
@@ -138,9 +140,9 @@ function App() {
           </p>
 
           <p className="demo-audition-hint" data-testid="demo-audition-hint">
-            Choose a DI track below, then press play in the demo player. The status
-            bar shows when the engine is starting, a track is loading, playing, or
-            paused.
+            {DEMO_INPUT_NAMES.length} distinct DI recordings to audition — metal,
+            rock, clean, and bass. Pick a track, press play, then swap amps to
+            hear how each one responds.
           </p>
 
           <NamPlayer
@@ -176,8 +178,22 @@ function App() {
                 value={demoInputName}
                 onChange={(event) => setDemoInputName(event.target.value)}
               >
-                <optgroup label="Guitar">
-                  {DEMO_GUITAR_INPUTS.map((input) => (
+                <optgroup label="Metal">
+                  {DEMO_METAL_INPUTS.map((input) => (
+                    <option key={input.id} value={input.name}>
+                      {input.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Rock">
+                  {DEMO_ROCK_INPUTS.map((input) => (
+                    <option key={input.id} value={input.name}>
+                      {input.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Clean">
+                  {DEMO_CLEAN_INPUTS.map((input) => (
                     <option key={input.id} value={input.name}>
                       {input.name}
                     </option>

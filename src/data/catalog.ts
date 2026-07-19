@@ -136,8 +136,11 @@ export const CABINET_IRS: NonEmptyArray<CabinetIr> = [
 
 export const DEMO_INPUTS = buildDemoInputs(BASE)
 
-export const DEMO_GUITAR_INPUTS = DEMO_INPUTS.filter((input) => input.genre !== 'bass')
+export const DEMO_METAL_INPUTS = DEMO_INPUTS.filter((input) => input.genre === 'metal')
+export const DEMO_ROCK_INPUTS = DEMO_INPUTS.filter((input) => input.genre === 'rock')
+export const DEMO_CLEAN_INPUTS = DEMO_INPUTS.filter((input) => input.genre === 'blues')
 export const DEMO_BASS_INPUTS = DEMO_INPUTS.filter((input) => input.genre === 'bass')
+export const DEMO_GUITAR_INPUTS = DEMO_INPUTS.filter((input) => input.genre !== 'bass')
 export const DEMO_INPUT_NAMES = DEMO_INPUTS.map((input) => input.name)
 export const CABINET_IR_NAMES = CABINET_IRS.map((ir) => ir.name)
 

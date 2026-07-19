@@ -3,6 +3,7 @@ import {
   T3kPlayer,
   T3kPlayerProvider,
   PREVIEW_MODE,
+  useT3kPlayerContext,
   type Input,
   type IR,
   type Model,
@@ -86,11 +87,17 @@ export function NamPlayer({
   }, [effects.reverbGain, effects.reverbMix, selectedIrName])
 
   const inputs = useMemo((): NonEmptyArray<Input> => {
-    return DEMO_INPUTS.map((input) => ({
-      name: input.name,
-      url: input.url,
-      default: input.name === selectedDemoInputName,
-    })) as NonEmptyArray<Input>
+    const selected =
+      DEMO_INPUTS.find((input) => input.name === selectedDemoInputName) ??
+      DEMO_INPUTS[0]
+
+    return [
+      {
+        name: selected.name,
+        url: selected.url,
+        default: true,
+      },
+    ]
   }, [selectedDemoInputName])
 
   return (
@@ -111,6 +118,7 @@ export function NamPlayer({
         onStatusChange={handlePlaybackStatusChange}
       />
       <NamPlayerSurface
+        selectedDemoInputName={selectedDemoInputName}
         models={models}
         irs={irs}
         inputs={inputs}
@@ -123,6 +131,7 @@ export function NamPlayer({
 }
 
 interface NamPlayerSurfaceProps {
+  selectedDemoInputName: string
   models: NonEmptyArray<Model>
   irs: NonEmptyArray<IR>
   inputs: NonEmptyArray<Input>
@@ -132,6 +141,7 @@ interface NamPlayerSurfaceProps {
 }
 
 function NamPlayerSurface({
+  selectedDemoInputName,
   models,
   irs,
   inputs,
@@ -139,9 +149,14 @@ function NamPlayerSurface({
   onIrChange,
   onDemoInputChange,
 }: NamPlayerSurfaceProps) {
+  const { audioState } = useT3kPlayerContext()
+  const playerKey =
+    audioState.initState === 'ready' ? NAM_PLAYER_ID : selectedDemoInputName
+
   return (
     <div className="nam-player-shell" data-testid="nam-player">
       <T3kPlayer
+        key={playerKey}
         id={NAM_PLAYER_ID}
         models={models}
         irs={irs}
