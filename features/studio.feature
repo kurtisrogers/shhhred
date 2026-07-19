@@ -34,6 +34,7 @@ Feature: Shhhred Studio
   Scenario: Demo playback starts from the amp rack
     When I start demo playback
     Then demo playback should be active
+    And the demo playback status should be "Playing"
 
   Scenario: Swap amps during demo playback
     When I start demo playback

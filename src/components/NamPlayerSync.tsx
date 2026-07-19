@@ -14,6 +14,8 @@ interface NamPlayerSyncProps {
   selectedIrName: string
   selectedDemoInputName: string
   effects: EffectSettings
+  onSyncLoadingChange?: (loading: boolean) => void
+  onSyncError?: (message: string | null) => void
 }
 
 export function NamPlayerSync({
@@ -21,6 +23,8 @@ export function NamPlayerSync({
   selectedIrName,
   selectedDemoInputName,
   effects,
+  onSyncLoadingChange,
+  onSyncError,
 }: NamPlayerSyncProps) {
   const {
     audioState,
@@ -80,6 +84,11 @@ export function NamPlayerSync({
     let cancelled = false
 
     const syncEngine = async () => {
+      if (modelChanged || irChanged || reverbChanged) {
+        onSyncLoadingChange?.(true)
+        onSyncError?.(null)
+      }
+
       try {
         if (modelChanged) {
           await loadModel(model.url)
@@ -106,6 +115,13 @@ export function NamPlayerSync({
         }
       } catch (error) {
         console.error('Failed to sync amp engine:', error)
+        if (!cancelled) {
+          onSyncError?.('Failed to update the amp engine. Try play again.')
+        }
+      } finally {
+        if (!cancelled && (modelChanged || irChanged || reverbChanged)) {
+          onSyncLoadingChange?.(false)
+        }
       }
     }
 
@@ -126,6 +142,8 @@ export function NamPlayerSync({
     removeIr,
     selectedIrName,
     selectedModelName,
+    onSyncError,
+    onSyncLoadingChange,
     setBypass,
     setPlaying,
   ])
@@ -153,6 +171,9 @@ export function NamPlayerSync({
 
     let cancelled = false
 
+    onSyncLoadingChange?.(true)
+    onSyncError?.(null)
+
     void loadAudio(input.url)
       .then(() => {
         if (!cancelled && wasPlaying) {
@@ -161,6 +182,14 @@ export function NamPlayerSync({
       })
       .catch((error) => {
         console.error('Failed to load demo input:', error)
+        if (!cancelled) {
+          onSyncError?.(`Could not load “${input.name}”. Try another track.`)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          onSyncLoadingChange?.(false)
+        }
       })
 
     return () => {
@@ -172,6 +201,8 @@ export function NamPlayerSync({
     audioState.audioUrl,
     audioState.isPlaying,
     loadAudio,
+    onSyncError,
+    onSyncLoadingChange,
     selectedDemoInputName,
     setPlaying,
   ])

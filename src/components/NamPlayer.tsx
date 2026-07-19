@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   T3kPlayer,
   T3kPlayerProvider,
@@ -14,7 +14,9 @@ import {
   DEMO_INPUTS,
   type NonEmptyArray,
 } from '../data/catalog'
+import type { DemoPlaybackSnapshot } from '../lib/demoPlayerStatus'
 import type { EffectSettings } from '../types/preset'
+import { DemoPlaybackStatus } from './DemoPlaybackStatus'
 import { NAM_PLAYER_ID, NamPlayerSync } from './NamPlayerSync'
 
 interface NamPlayerProps {
@@ -25,8 +27,7 @@ interface NamPlayerProps {
   onModelChange: (name: string) => void
   onIrChange: (name: string) => void
   onDemoInputChange: (name: string) => void
-  onDemoStart: () => void
-  onLiveStart: () => void
+  onPlaybackStatusChange?: (status: DemoPlaybackSnapshot) => void
 }
 
 export function NamPlayer({
@@ -37,9 +38,17 @@ export function NamPlayer({
   onModelChange,
   onIrChange,
   onDemoInputChange,
-  onDemoStart,
-  onLiveStart,
+  onPlaybackStatusChange,
 }: NamPlayerProps) {
+  const [syncLoading, setSyncLoading] = useState(false)
+  const [syncError, setSyncError] = useState<string | null>(null)
+
+  const handlePlaybackStatusChange = useCallback(
+    (status: DemoPlaybackSnapshot) => {
+      onPlaybackStatusChange?.(status)
+    },
+    [onPlaybackStatusChange],
+  )
   const models = useMemo((): NonEmptyArray<Model> => {
     return AMP_MODELS.map((model) => ({
       name: model.name,
@@ -84,6 +93,14 @@ export function NamPlayer({
         selectedIrName={selectedIrName}
         selectedDemoInputName={selectedDemoInputName}
         effects={effects}
+        onSyncLoadingChange={setSyncLoading}
+        onSyncError={setSyncError}
+      />
+      <DemoPlaybackStatus
+        trackName={selectedDemoInputName}
+        syncLoading={syncLoading}
+        errorMessage={syncError}
+        onStatusChange={handlePlaybackStatusChange}
       />
       <NamPlayerSurface
         models={models}
@@ -92,8 +109,6 @@ export function NamPlayer({
         onModelChange={onModelChange}
         onIrChange={onIrChange}
         onDemoInputChange={onDemoInputChange}
-        onDemoStart={onDemoStart}
-        onLiveStart={onLiveStart}
       />
     </T3kPlayerProvider>
   )
@@ -106,8 +121,6 @@ interface NamPlayerSurfaceProps {
   onModelChange: (name: string) => void
   onIrChange: (name: string) => void
   onDemoInputChange: (name: string) => void
-  onDemoStart: () => void
-  onLiveStart: () => void
 }
 
 function NamPlayerSurface({
@@ -117,8 +130,6 @@ function NamPlayerSurface({
   onModelChange,
   onIrChange,
   onDemoInputChange,
-  onDemoStart,
-  onLiveStart,
 }: NamPlayerSurfaceProps) {
   return (
     <div className="nam-player-shell" data-testid="nam-player">
@@ -131,14 +142,6 @@ function NamPlayerSurface({
         onModelChange={(model) => onModelChange(model.name)}
         onIrChange={(ir) => onIrChange(ir.name)}
         onInputChange={(input) => onDemoInputChange(input.name)}
-        onPlayDemo={() => onDemoStart()}
-        onPlayLive={() => onLiveStart()}
-        infoSlot={
-          <div className="nam-overlay">
-            <span>Neural Amp Modeler</span>
-            <strong>Demo + Live Input Ready</strong>
-          </div>
-        }
       />
     </div>
   )

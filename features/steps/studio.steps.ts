@@ -145,6 +145,13 @@ Then('the demo track should be {string}', async ({ page }, track: string) => {
   await expect(page.getByTestId('demo-input-select')).toHaveValue(track)
 })
 
+Then('the demo playback status should be {string}', async ({ page }, label: string) => {
+  await expect(page.getByTestId('demo-playback-phase')).toHaveText(label, {
+    timeout: 20_000,
+  })
+  await expect(page.getByTestId('demo-playback-phase-pill')).toHaveText(label)
+})
+
 Then('demo playback should be active', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible({
     timeout: 20_000,
