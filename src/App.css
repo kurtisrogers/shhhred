@@ -240,19 +240,8 @@
   grid-column: 1 / -1;
 }
 
-.amp-models__groups {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.amp-models__category {
-  margin: 0 0 0.75rem;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(244, 247, 255, 0.55);
+.amp-models__hint {
+  margin: 0 0 1rem;
 }
 
 .amp-models__grid {
@@ -319,7 +308,8 @@
   grid-column: span 7;
 }
 
-.controls-panel {
+.controls-panel,
+.effects-panel {
   grid-column: span 5;
 }
 
@@ -607,6 +597,7 @@
 
   .amp-panel,
   .controls-panel,
+  .effects-panel,
   .midi-panel,
   .preset-panel {
     grid-column: span 12;

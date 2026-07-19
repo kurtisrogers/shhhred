@@ -1,22 +1,16 @@
 import { useCallback, useState } from 'react'
 import { AmbientBackground } from './components/AmbientBackground'
 import { AmpModelPicker } from './components/AmpModelPicker'
-import { FactoryPresetPicker } from './components/FactoryPresetPicker'
 import { Knob } from './components/Knob'
 import { MidiPanel } from './components/MidiPanel'
 import { NamPlayer } from './components/NamPlayer'
 import { PresetManager } from './components/PresetManager'
 import { SpectrumVisualizer } from './components/SpectrumVisualizer'
-import {
-  CABINET_IR_NAMES,
-  DEMO_INPUT_NAMES,
-  DEFAULT_FACTORY_PRESET,
-  FACTORY_PRESETS,
-  type FactoryPreset,
-} from './data/factoryPresets'
+import { CABINET_IR_NAMES, DEMO_INPUT_NAMES } from './data/factoryPresets'
 import type { AmpModel } from './data/catalog'
 import { useMidi } from './hooks/useMidi'
 import { createPreset, downloadPreset } from './lib/presets'
+import { DEFAULT_STUDIO } from './lib/studioDefaults'
 import {
   DEFAULT_MIDI_MAPPINGS,
   type EffectSettings,
@@ -24,25 +18,12 @@ import {
 } from './types/preset'
 import './App.css'
 
-function applyFactoryPreset(preset: FactoryPreset) {
-  return {
-    presetName: preset.name,
-    modelName: preset.modelName,
-    irName: preset.irName,
-    demoInputName: preset.demoInputName,
-    effects: { ...preset.effects },
-    factoryPresetId: preset.id,
-  }
-}
-
 function App() {
-  const initial = applyFactoryPreset(DEFAULT_FACTORY_PRESET)
-  const [effects, setEffects] = useState<EffectSettings>(initial.effects)
-  const [modelName, setModelName] = useState(initial.modelName)
-  const [irName, setIrName] = useState(initial.irName)
-  const [demoInputName, setDemoInputName] = useState(initial.demoInputName)
-  const [presetName, setPresetName] = useState(initial.presetName)
-  const [factoryPresetId, setFactoryPresetId] = useState(initial.factoryPresetId)
+  const [effects, setEffects] = useState<EffectSettings>(DEFAULT_STUDIO.effects)
+  const [modelName, setModelName] = useState(DEFAULT_STUDIO.modelName)
+  const [irName, setIrName] = useState(DEFAULT_STUDIO.irName)
+  const [demoInputName, setDemoInputName] = useState(DEFAULT_STUDIO.demoInputName)
+  const [presetName, setPresetName] = useState(DEFAULT_STUDIO.presetName)
   const [midiMappings] = useState(DEFAULT_MIDI_MAPPINGS)
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -59,22 +40,10 @@ function App() {
 
   const updateEffect = (key: keyof EffectSettings, value: number | boolean) => {
     setEffects((current) => ({ ...current, [key]: value }))
-    setFactoryPresetId('')
-  }
-
-  const applyPreset = (preset: FactoryPreset) => {
-    const next = applyFactoryPreset(preset)
-    setPresetName(next.presetName)
-    setModelName(next.modelName)
-    setIrName(next.irName)
-    setDemoInputName(next.demoInputName)
-    setEffects(next.effects)
-    setFactoryPresetId(next.factoryPresetId)
   }
 
   const applyAmpModel = (model: AmpModel) => {
     setModelName(model.name)
-    setFactoryPresetId('')
   }
 
   const handleSavePreset = () => {
@@ -97,11 +66,14 @@ function App() {
     if (preset.demoInputName) {
       setDemoInputName(preset.demoInputName)
     }
-    setFactoryPresetId('')
   }
 
   const handleReset = () => {
-    applyPreset(DEFAULT_FACTORY_PRESET)
+    setPresetName(DEFAULT_STUDIO.presetName)
+    setModelName(DEFAULT_STUDIO.modelName)
+    setIrName(DEFAULT_STUDIO.irName)
+    setDemoInputName(DEFAULT_STUDIO.demoInputName)
+    setEffects(DEFAULT_STUDIO.effects)
   }
 
   return (
@@ -115,25 +87,19 @@ function App() {
             Shhhred <span>Studio</span>
           </h1>
           <p className="hero__subtitle">
-            Audition classic amp tones, play live through neural modeling, map MIDI
-            controllers, and save presets you can reload anywhere.
+            Pick any amp, dial in effects, audition DI tracks, map MIDI
+            controllers, and save tones you can reload anywhere.
           </p>
         </div>
         <SpectrumVisualizer active={isPlaying} />
       </header>
 
       <main className="layout">
-        <FactoryPresetPicker
-          presets={FACTORY_PRESETS}
-          activePresetId={factoryPresetId}
-          onSelect={applyPreset}
-        />
-
         <AmpModelPicker activeModelName={modelName} onSelect={applyAmpModel} />
 
         <section className="panel amp-panel" data-testid="amp-rack">
           <header className="panel__header">
-            <h2>Amp Rack</h2>
+            <h2>Demo Player</h2>
             <span className={`status-pill ${isPlaying ? 'status-pill--on' : ''}`}>
               {isPlaying ? 'Playing' : 'Ready'}
             </span>
@@ -143,9 +109,9 @@ function App() {
           </p>
 
           <p className="demo-audition-hint" data-testid="demo-audition-hint">
-            <strong>Demo audition</strong> — choose a DI track below, pick any amp
-            model above, switch to the <em>Demo</em> tab, and hit play. No guitar
-            needed.
+            <strong>Demo audition</strong> — choose a DI track below, switch to the{' '}
+            <em>Demo</em> tab, and hit play. Swap amps or cabinets while the track
+            is running.
           </p>
 
           <NamPlayer
@@ -153,18 +119,9 @@ function App() {
             selectedIrName={irName}
             selectedDemoInputName={demoInputName}
             effects={effects}
-            onModelChange={(name) => {
-              setModelName(name)
-              setFactoryPresetId('')
-            }}
-            onIrChange={(name) => {
-              setIrName(name)
-              setFactoryPresetId('')
-            }}
-            onDemoInputChange={(name) => {
-              setDemoInputName(name)
-              setFactoryPresetId('')
-            }}
+            onModelChange={setModelName}
+            onIrChange={setIrName}
+            onDemoInputChange={setDemoInputName}
             onDemoStart={() => setIsPlaying(true)}
             onLiveStart={() => setIsPlaying(true)}
           />
@@ -175,10 +132,7 @@ function App() {
               <select
                 data-testid="cabinet-ir-select"
                 value={irName}
-                onChange={(event) => {
-                  setIrName(event.target.value)
-                  setFactoryPresetId('')
-                }}
+                onChange={(event) => setIrName(event.target.value)}
               >
                 {CABINET_IR_NAMES.map((name) => (
                   <option key={name} value={name}>
@@ -192,10 +146,7 @@ function App() {
               <select
                 data-testid="demo-input-select"
                 value={demoInputName}
-                onChange={(event) => {
-                  setDemoInputName(event.target.value)
-                  setFactoryPresetId('')
-                }}
+                onChange={(event) => setDemoInputName(event.target.value)}
               >
                 {DEMO_INPUT_NAMES.map((name) => (
                   <option key={name} value={name}>
@@ -207,9 +158,9 @@ function App() {
           </div>
         </section>
 
-        <section className="panel controls-panel" data-testid="tone-sculpt">
+        <section className="panel effects-panel" data-testid="effects-panel">
           <header className="panel__header">
-            <h2>Tone Sculpt</h2>
+            <h2>Effects</h2>
           </header>
 
           <div className="knob-grid">

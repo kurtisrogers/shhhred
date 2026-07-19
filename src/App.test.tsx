@@ -40,27 +40,13 @@ describe('App', () => {
 
     expect(screen.getByTestId('studio-app')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Shhhred/i })).toBeInTheDocument()
-    expect(screen.getByTestId('factory-presets')).toBeInTheDocument()
     expect(screen.getByTestId('amp-models')).toBeInTheDocument()
     expect(screen.getByTestId('amp-rack')).toBeInTheDocument()
     expect(screen.getByTestId('demo-audition-hint')).toBeInTheDocument()
-    expect(screen.getByTestId('tone-sculpt')).toBeInTheDocument()
+    expect(screen.getByTestId('effects-panel')).toBeInTheDocument()
     expect(screen.getByTestId('midi-panel')).toBeInTheDocument()
     expect(screen.getByTestId('preset-panel')).toBeInTheDocument()
     expect(screen.getByTestId('demo-input-select')).toBeInTheDocument()
-  })
-
-  it('loads a factory preset for the Peavey 5150', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    await user.click(screen.getByTestId('factory-preset-5150-block-boosted'))
-
-    expect(screen.getByTestId('active-amp-model')).toHaveTextContent(
-      'Peavey 5150 Block Letter (Boosted)',
-    )
-    expect(screen.getByTestId('demo-input-select')).toHaveValue('Metalcore - Guitar')
-    expect(screen.getByTestId('preset-name-input')).toHaveValue('5150 Block Letter')
   })
 
   it('changes amp model selection', async () => {
@@ -81,11 +67,11 @@ describe('App', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    await user.click(screen.getByTestId('factory-preset-5150-block-boosted'))
+    await user.click(screen.getByTestId('amp-model-fender-deluxe'))
     await user.click(screen.getByTestId('reset-studio'))
 
     expect(screen.getByTestId('active-amp-model')).toHaveTextContent('Vox AC10')
     expect(screen.getByTestId('cabinet-ir-select')).toHaveValue('Celestion 4x12')
-    expect(screen.getByTestId('preset-name-input')).toHaveValue('Midnight Crunch')
+    expect(screen.getByTestId('preset-name-input')).toHaveValue('Untitled Tone')
   })
 })

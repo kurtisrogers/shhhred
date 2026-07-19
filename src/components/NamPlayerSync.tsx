@@ -7,6 +7,8 @@ import {
 } from '../data/catalog'
 import type { EffectSettings } from '../types/preset'
 
+export const NAM_PLAYER_ID = 'shhhred-main-player'
+
 interface NamPlayerSyncProps {
   selectedModelName: string
   selectedIrName: string
@@ -24,8 +26,11 @@ export function NamPlayerSync({
     audioState,
     getAudioNodes,
     loadAudio,
-    syncEngineSettings,
+    loadModel,
+    loadIr,
+    removeIr,
     setBypass,
+    setPlaying,
   } = useT3kPlayerContext()
 
   const audioReady = audioState.initState === 'ready' && audioState.audioUrl !== null
@@ -55,6 +60,9 @@ export function NamPlayerSync({
       return
     }
 
+    const wasPlaying =
+      audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID
+
     prevEngineSettingsRef.current = {
       modelName: selectedModelName,
       irName: selectedIrName,
@@ -69,27 +77,57 @@ export function NamPlayerSync({
       return
     }
 
-    const timer = window.setTimeout(() => {
-      void syncEngineSettings({
-        modelUrl: model.url,
-        ir: {
-          url: ir.url || null,
-          mix: effects.reverbMix,
-          gain: effects.reverbGain,
-        },
-        bypassed: effects.bypass,
-      })
-    }, 0)
+    let cancelled = false
 
-    return () => window.clearTimeout(timer)
+    const syncEngine = async () => {
+      try {
+        if (modelChanged) {
+          await loadModel(model.url)
+        }
+
+        if (irChanged || reverbChanged) {
+          if (ir.url) {
+            await loadIr({
+              url: ir.url,
+              mix: effects.reverbMix,
+              gain: effects.reverbGain,
+            })
+          } else {
+            removeIr()
+          }
+        }
+
+        if (bypassChanged) {
+          setBypass(effects.bypass)
+        }
+
+        if (!cancelled && wasPlaying) {
+          setPlaying(true, NAM_PLAYER_ID)
+        }
+      } catch (error) {
+        console.error('Failed to sync amp engine:', error)
+      }
+    }
+
+    void syncEngine()
+
+    return () => {
+      cancelled = true
+    }
   }, [
     audioReady,
+    audioState.activePlayerId,
+    audioState.isPlaying,
     effects.bypass,
     effects.reverbGain,
     effects.reverbMix,
+    loadIr,
+    loadModel,
+    removeIr,
     selectedIrName,
     selectedModelName,
-    syncEngineSettings,
+    setBypass,
+    setPlaying,
   ])
 
   const prevDemoInputRef = useRef(selectedDemoInputName)
@@ -103,6 +141,9 @@ export function NamPlayerSync({
       return
     }
 
+    const wasPlaying =
+      audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID
+
     prevDemoInputRef.current = selectedDemoInputName
 
     const input = getDemoInputByName(selectedDemoInputName)
@@ -110,8 +151,30 @@ export function NamPlayerSync({
       return
     }
 
+    let cancelled = false
+
     void loadAudio(input.url)
-  }, [audioReady, audioState.audioUrl, loadAudio, selectedDemoInputName])
+      .then(() => {
+        if (!cancelled && wasPlaying) {
+          setPlaying(true, NAM_PLAYER_ID)
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load demo input:', error)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    audioReady,
+    audioState.activePlayerId,
+    audioState.audioUrl,
+    audioState.isPlaying,
+    loadAudio,
+    selectedDemoInputName,
+    setPlaying,
+  ])
 
   useEffect(() => {
     if (!audioReady) {
