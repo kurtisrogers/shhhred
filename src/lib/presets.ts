@@ -13,12 +13,14 @@ export function createPreset(
   irName: string,
   effects: EffectSettings = DEFAULT_EFFECTS,
   midiMappings: MidiMapping[] = DEFAULT_MIDI_MAPPINGS,
+  demoInputName?: string,
 ): TonePreset {
   return {
     version: PRESET_VERSION,
     name,
     modelName,
     irName,
+    demoInputName,
     effects: { ...effects },
     midiMappings: midiMappings.map((mapping) => ({ ...mapping })),
     createdAt: new Date().toISOString(),
@@ -60,6 +62,8 @@ export function parsePreset(json: string): TonePreset {
     name: data.name.trim(),
     modelName: data.modelName,
     irName: data.irName,
+    demoInputName:
+      typeof data.demoInputName === 'string' ? data.demoInputName : undefined,
     effects,
     midiMappings,
     createdAt:

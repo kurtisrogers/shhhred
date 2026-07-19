@@ -28,7 +28,7 @@ export function MidiPanel({
   onEnable,
 }: MidiPanelProps) {
   return (
-    <section className="panel midi-panel">
+    <section className="panel midi-panel" data-testid="midi-panel">
       <header className="panel__header">
         <h2>MIDI Control</h2>
         <span className={`status-pill ${ready ? 'status-pill--on' : ''}`}>
@@ -44,7 +44,7 @@ export function MidiPanel({
       )}
 
       {supported && !ready && (
-        <button type="button" className="btn btn--ghost" onClick={onEnable}>
+        <button type="button" className="btn btn--ghost" data-testid="enable-midi" onClick={onEnable}>
           Enable MIDI Access
         </button>
       )}

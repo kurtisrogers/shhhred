@@ -7,8 +7,10 @@ A glam browser-based guitar studio powered by [Neural Amp Modeler (NAM)](https:/
 ## Features
 
 - **Live guitar input** — play through NAM amp models in real time via your audio interface
-- **Neural amp modeling** — Vox AC10 and Fender Deluxe Reverb models via WebAssembly
-- **Cabinet IRs** — Celestion cab and EMT 140 plate reverb impulse responses
+- **Demo player** — audition tones instantly with pre-recorded guitar DI tracks
+- **Neural amp modeling** — 12 amp models including Peavey 5150, 6505+, JCM2000, Mesa Mark IV, Soldano, ENGL, and more
+- **Classic presets** — one-click factory tones for metal and rock rigs
+- **Cabinet IRs** — Celestion 4x12 and EMT 140 plate reverb impulse responses
 - **MIDI control** — map CC messages to gain, tone, reverb, and master volume
 - **Preset save/load** — download and reload `.shhhred.json` preset files
 - **Visual feedback** — animated spectrum visualizer and neon studio UI
@@ -39,8 +41,24 @@ npm run preview
 ### Test
 
 ```bash
-npm test
+npm test              # unit tests
+npm run test:coverage # unit tests with coverage
+npm run test:e2e      # Playwright BDD scenarios
+npm run validate      # lint + typecheck + unit + e2e
 ```
+
+### Quality gates
+
+Pre-commit hooks (Husky + lint-staged) run oxlint and related Vitest tests on staged TypeScript files.
+
+GitHub Actions CI runs on every push and pull request:
+
+- **Lint** — oxlint on `src/`, `features/`, and config files
+- **Typecheck** — `tsc -b`
+- **Unit tests** — Vitest with coverage artifact upload
+- **BDD e2e** — Playwright scenarios from `features/studio.feature`
+
+Deploy workflow on `main` runs the full quality suite before publishing to GitHub Pages.
 
 ## Browser Requirements
 
@@ -79,6 +97,10 @@ Presets are saved as `.shhhred.json` files:
 
 - [Neural Amp Modeler](https://github.com/sdatkinson/neural-amp-modeler) by Steve Atkinson
 - [neural-amp-modeler-wasm](https://github.com/tone-3000/neural-amp-modeler-wasm) by TONE3000
+
+## Amp model credits
+
+Community NAM captures are sourced from [pelennor2170/NAM_models](https://github.com/pelennor2170/NAM_models) (GPL-3.0). Demo guitar DI tracks are from the [neural-amp-modeler-wasm](https://github.com/tone-3000/neural-amp-modeler-wasm) project.
 
 ## License
 

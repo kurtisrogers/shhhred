@@ -20,6 +20,7 @@ export interface TonePreset {
   name: string
   modelName: string
   irName: string
+  demoInputName?: string
   effects: EffectSettings
   midiMappings: MidiMapping[]
   createdAt: string
