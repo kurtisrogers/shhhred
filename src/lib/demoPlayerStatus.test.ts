@@ -62,6 +62,24 @@ describe('resolveDemoPlaybackStatus', () => {
     expect(status.message).toContain('Paused')
   })
 
+  it('reports engine loading separately from track loading', () => {
+    const engineStatus = resolveDemoPlaybackStatus({
+      ...base,
+      syncLoading: true,
+      syncLoadingReason: 'engine',
+    })
+
+    expect(engineStatus.message).toBe('Switching amp…')
+
+    const trackStatus = resolveDemoPlaybackStatus({
+      ...base,
+      syncLoading: true,
+      syncLoadingReason: 'track',
+    })
+
+    expect(trackStatus.message).toContain('Mayer - Guitar')
+  })
+
   it('reports errors with a message', () => {
     const status = resolveDemoPlaybackStatus({
       ...base,
@@ -70,6 +88,21 @@ describe('resolveDemoPlaybackStatus', () => {
 
     expect(status.phase).toBe('error')
     expect(status.message).toBe('Playback failed')
+  })
+
+  it('keeps playing visible while switching amps during playback', () => {
+    const status = resolveDemoPlaybackStatus({
+      ...base,
+      syncLoading: true,
+      syncLoadingReason: 'engine',
+      isPlaying: true,
+      isActivePlayer: true,
+      currentTime: 14,
+    })
+
+    expect(status.phase).toBe('playing')
+    expect(status.message).toContain('switching amp')
+    expect(status.isPlaying).toBe(true)
   })
 })
 

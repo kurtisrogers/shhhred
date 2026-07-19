@@ -40,6 +40,7 @@ Feature: Shhhred Studio
     When I start demo playback
     And I select the amp model "Fender Deluxe Reverb"
     Then demo playback should be active
+    And the demo playback status should be "Playing"
 
   Scenario: Swap demo track during playback
     When I start demo playback

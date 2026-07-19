@@ -7,15 +7,18 @@ import {
 } from '../data/catalog'
 import { audioSourcesMatch, NAM_PLAYER_ID } from '../lib/demoPlayerEngine'
 import type { EffectSettings } from '../types/preset'
+import type { SyncLoadingReason, SyncLoadingState } from '../lib/demoPlayerStatus'
 
 export { NAM_PLAYER_ID }
+
+export type { SyncLoadingReason, SyncLoadingState }
 
 interface NamPlayerSyncProps {
   selectedModelName: string
   selectedIrName: string
   selectedDemoInputName: string
   effects: EffectSettings
-  onSyncLoadingChange?: (loading: boolean) => void
+  onSyncLoadingChange?: (state: SyncLoadingState) => void
   onSyncError?: (message: string | null) => void
 }
 
@@ -91,7 +94,7 @@ export function NamPlayerSync({
     let cancelled = false
 
     if (showLoading) {
-      onSyncLoadingChange?.(true)
+      onSyncLoadingChange?.({ loading: true, reason: 'engine' })
       onSyncError?.(null)
     }
 
@@ -127,7 +130,7 @@ export function NamPlayerSync({
         }
       } finally {
         if (!cancelled && token === syncTokenRef.current && showLoading) {
-          onSyncLoadingChange?.(false)
+          onSyncLoadingChange?.({ loading: false, reason: null })
         }
       }
     }
@@ -176,7 +179,7 @@ export function NamPlayerSync({
 
     let cancelled = false
 
-    onSyncLoadingChange?.(true)
+    onSyncLoadingChange?.({ loading: true, reason: 'track' })
     onSyncError?.(null)
 
     const switchTrack = async () => {
@@ -198,7 +201,7 @@ export function NamPlayerSync({
         }
       } finally {
         if (!cancelled && token === syncTokenRef.current) {
-          onSyncLoadingChange?.(false)
+          onSyncLoadingChange?.({ loading: false, reason: null })
         }
       }
     }

@@ -123,15 +123,17 @@ function App() {
         <section className="panel amp-panel" data-testid="amp-rack">
           <header className="panel__header">
             <h2>Demo Player</h2>
-            <span className="status-pill status-pill--on" data-testid="demo-track-count">
-              {DEMO_INPUT_NAMES.length} tracks
-            </span>
-            <span
-              className={`status-pill status-pill--${playbackStatus.phase}`}
-              data-testid="demo-playback-phase-pill"
-            >
-              {getPlaybackPhaseLabel(playbackStatus.phase)}
-            </span>
+            <div className="panel__header-pills">
+              <span className="status-pill status-pill--on" data-testid="demo-track-count">
+                {DEMO_INPUT_NAMES.length} tracks
+              </span>
+              <span
+                className={`status-pill status-pill--${playbackStatus.phase}`}
+                data-testid="demo-playback-phase-pill"
+              >
+                {getPlaybackPhaseLabel(playbackStatus.phase)}
+              </span>
+            </div>
           </header>
           <p className="sr-only" data-testid="active-amp-model">
             {modelName}

@@ -6,11 +6,13 @@ import {
   resolveDemoPlaybackStatus,
   type DemoPlaybackSnapshot,
 } from '../lib/demoPlayerStatus'
+import type { SyncLoadingReason } from '../lib/demoPlayerStatus'
 import { NAM_PLAYER_ID } from './NamPlayerSync'
 
 interface DemoPlaybackStatusProps {
   trackName: string
   syncLoading: boolean
+  syncLoadingReason?: SyncLoadingReason | null
   errorMessage?: string | null
   onStatusChange?: (status: DemoPlaybackSnapshot) => void
 }
@@ -18,6 +20,7 @@ interface DemoPlaybackStatusProps {
 export function DemoPlaybackStatus({
   trackName,
   syncLoading,
+  syncLoadingReason = null,
   errorMessage = null,
   onStatusChange,
 }: DemoPlaybackStatusProps) {
@@ -68,6 +71,7 @@ export function DemoPlaybackStatus({
         isPlaying: audioState.isPlaying,
         isActivePlayer: audioState.activePlayerId === NAM_PLAYER_ID,
         syncLoading,
+        syncLoadingReason,
         trackName,
         currentTime,
         duration,
@@ -83,6 +87,7 @@ export function DemoPlaybackStatus({
       duration,
       errorMessage,
       syncLoading,
+      syncLoadingReason,
       trackName,
     ],
   )
