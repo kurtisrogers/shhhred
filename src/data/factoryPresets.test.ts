@@ -7,12 +7,12 @@ import {
 import { AMP_MODELS, DEMO_INPUTS } from './catalog'
 
 describe('factory presets', () => {
-  it('includes heavy metal classics like the 5150 and Iommi', () => {
+  it('includes heavy metal classics like the 5150 and Killswitch Engage', () => {
     const names = FACTORY_PRESETS.map((preset) => preset.name)
     expect(names).toContain('5150 Block Letter')
     expect(names).toContain('6505+ Red Channel')
     expect(names).toContain('JCM800 Crunch')
-    expect(names).toContain('Iron Sabbath')
+    expect(names).toContain('Killswitch Engage')
   })
 
   it('references valid catalog entries', () => {

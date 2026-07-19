@@ -16,7 +16,7 @@ const AMP_MODEL_IDS: Record<string, string> = {
   'ENGL Savage': 'engl-savage',
   'Orange Rockerverb': 'orange-rockerverb',
   'Friedman DSM': 'friedman-dsm',
-  'Laney GH100TI Iommi': 'laney-gh100s-iommi',
+  'Laney GH100TI': 'laney-gh100ti',
 }
 
 function getAmpIdByName(name: string): string {
