@@ -60,9 +60,19 @@ GitHub Actions CI (`.github/workflows/ci.yml`) runs on every push and pull reque
 | **Lint, Typecheck & Unit Tests** | oxlint, `tsc -b`, Vitest with coverage artifact upload |
 | **Playwright BDD** | Playwright scenarios from `features/*.feature` |
 | **All checks passed** | Aggregate gate — use this as the required status check for branch protection |
-| **Deploy GitHub Pages** | Builds and publishes to GitHub Pages (push to `main` only, after tests pass) |
+| **Deploy GitHub Pages** | Builds and publishes to GitHub Pages (push to `main`, or manual run with deploy enabled) |
 
-#### Require checks before merge
+#### Run CI or deploy manually
+
+The **Run workflow** button appears under **Actions → CI** only after this workflow exists on the default branch (`main`). Merge the CI PR first if you do not see it.
+
+1. Go to **Actions → CI**
+2. Click **Run workflow**
+3. Select the `main` branch
+4. Check **Deploy to GitHub Pages after tests pass** to publish after tests succeed
+5. Click **Run workflow**
+
+Deploy only runs from `main`. Unchecked, a manual run runs tests only.
 
 In **Settings → Branches → Branch protection rules** for `main`, enable **Require status checks to pass before merging** and select:
 
