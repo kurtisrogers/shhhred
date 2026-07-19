@@ -5,10 +5,11 @@ import {
   getDemoInputByName,
   getIrByName,
 } from '../data/catalog'
+import { audioSourcesMatch, NAM_PLAYER_ID } from '../lib/demoPlayerEngine'
 import type { EffectSettings } from '../types/preset'
 import type { SyncLoadingReason, SyncLoadingState } from '../lib/demoPlayerStatus'
 
-export const NAM_PLAYER_ID = 'shhhred-main-player'
+export { NAM_PLAYER_ID }
 
 export type { SyncLoadingReason, SyncLoadingState }
 
@@ -172,7 +173,7 @@ export function NamPlayerSync({
     prevDemoInputRef.current = selectedDemoInputName
 
     const input = getDemoInputByName(selectedDemoInputName)
-    if (!input || audioState.audioUrl === input.url) {
+    if (!input || audioSourcesMatch(audioState.audioUrl, input.url)) {
       return
     }
 
@@ -181,23 +182,31 @@ export function NamPlayerSync({
     onSyncLoadingChange?.({ loading: true, reason: 'track' })
     onSyncError?.(null)
 
-    void loadAudio(input.url)
-      .then(() => {
+    const switchTrack = async () => {
+      try {
+        await loadAudio(input.url)
+
+        const audioElement = getAudioNodes().audioElement
+        if (audioElement) {
+          audioElement.currentTime = 0
+        }
+
         if (!cancelled && wasPlaying) {
           setPlaying(true, NAM_PLAYER_ID)
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Failed to load demo input:', error)
         if (!cancelled) {
           onSyncError?.(`Could not load “${input.name}”. Try another track.`)
         }
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled && token === syncTokenRef.current) {
           onSyncLoadingChange?.({ loading: false, reason: null })
         }
-      })
+      }
+    }
+
+    void switchTrack()
 
     return () => {
       cancelled = true
@@ -205,6 +214,7 @@ export function NamPlayerSync({
   }, [
     audioReady,
     audioState.audioUrl,
+    getAudioNodes,
     loadAudio,
     onSyncError,
     onSyncLoadingChange,

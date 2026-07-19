@@ -42,6 +42,12 @@ Feature: Shhhred Studio
     Then demo playback should be active
     And the demo playback status should be "Playing"
 
+  Scenario: Swap demo track during playback
+    When I start demo playback
+    And I select the demo track "Metalcore - Guitar"
+    Then demo playback should be active
+    And the demo audio source should contain "metalcore-guitar.wav"
+
   Scenario: Demo track library is available
     Then I should see 15 demo tracks
     When I select the demo track "Metalcore - Guitar"
