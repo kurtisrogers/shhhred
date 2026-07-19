@@ -104,6 +104,13 @@ export const AMP_MODELS: NonEmptyArray<AmpModel> = [
     category: 'high-gain',
     description: 'Brown-sound inspired saturation.',
   },
+  {
+    id: 'laney-gh100s-iommi',
+    name: 'Laney GH100TI Iommi',
+    url: `${BASE}models/laney-gh100s-iommi.nam`,
+    category: 'metal',
+    description: 'Tony Iommi signature Laney — dark, punchy Sabbath doom.',
+  },
 ]
 
 export const CABINET_IRS: NonEmptyArray<CabinetIr> = [
