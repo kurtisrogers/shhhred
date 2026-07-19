@@ -59,55 +59,40 @@ export function NamPlayer({
     [onPlaybackStatusChange],
   )
   const models = useMemo((): NonEmptyArray<Model> => {
-    const selected =
-      AMP_MODELS.find((model) => model.name === selectedModelName) ?? AMP_MODELS[0]
-
-    return [
-      {
-        name: selected.name,
-        url: selected.url,
-        default: true,
-      },
-    ]
+    return AMP_MODELS.map((model) => ({
+      name: model.name,
+      url: model.url,
+      default: model.name === selectedModelName,
+    })) as NonEmptyArray<Model>
   }, [selectedModelName])
 
   const irs = useMemo((): NonEmptyArray<IR> => {
-    const selected =
-      CABINET_IRS.find((ir) => ir.name === selectedIrName) ?? CABINET_IRS[0]
+    return CABINET_IRS.map((ir) => {
+      const selected = ir.name === selectedIrName
+      if (!selected) {
+        return { name: ir.name, url: ir.url, default: false }
+      }
 
-    if (selected.name === 'None') {
-      return [
-        {
-          name: selected.name,
-          url: selected.url,
-          default: true,
-        },
-      ]
-    }
+      if (ir.name === 'None') {
+        return { name: ir.name, url: ir.url, default: true }
+      }
 
-    return [
-      {
-        name: selected.name,
-        url: selected.url,
+      return {
+        name: ir.name,
+        url: ir.url,
         default: true,
         mix: effects.reverbMix,
         gain: effects.reverbGain,
-      },
-    ]
+      }
+    }) as NonEmptyArray<IR>
   }, [effects.reverbGain, effects.reverbMix, selectedIrName])
 
   const inputs = useMemo((): NonEmptyArray<Input> => {
-    const selected =
-      DEMO_INPUTS.find((input) => input.name === selectedDemoInputName) ??
-      DEMO_INPUTS[0]
-
-    return [
-      {
-        name: selected.name,
-        url: selected.url,
-        default: true,
-      },
-    ]
+    return DEMO_INPUTS.map((input) => ({
+      name: input.name,
+      url: input.url,
+      default: input.name === selectedDemoInputName,
+    })) as NonEmptyArray<Input>
   }, [selectedDemoInputName])
 
   return (
