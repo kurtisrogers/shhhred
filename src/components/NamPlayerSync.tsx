@@ -6,6 +6,11 @@ import {
   getIrByName,
 } from '../data/catalog'
 import { audioSourcesMatch, NAM_PLAYER_ID } from '../lib/demoPlayerEngine'
+import {
+  pauseDemoPlayback,
+  resumeDemoPlayback,
+  syncDemoEngine,
+} from '../lib/demoPlayerSyncEngine'
 import type { EffectSettings } from '../types/preset'
 import type { SyncLoadingReason, SyncLoadingState } from '../lib/demoPlayerStatus'
 
@@ -34,9 +39,7 @@ export function NamPlayerSync({
     audioState,
     getAudioNodes,
     loadAudio,
-    loadModel,
-    loadIr,
-    removeIr,
+    syncEngineSettings,
     setBypass,
     setPlaying,
   } = useT3kPlayerContext()
@@ -76,7 +79,8 @@ export function NamPlayerSync({
     }
 
     const wasPlaying = playbackRef.current
-    const showLoading = modelChanged || irChanged || reverbChanged
+    const engineReloadNeeded = modelChanged || irChanged || reverbChanged
+    const showLoading = engineReloadNeeded
     const token = ++syncTokenRef.current
 
     prevEngineSettingsRef.current = {
@@ -102,28 +106,29 @@ export function NamPlayerSync({
 
     const syncEngine = async () => {
       try {
-        if (modelChanged) {
-          await loadModel(model.url)
-        }
-
-        if (irChanged || reverbChanged) {
-          if (ir.url) {
-            await loadIr({
-              url: ir.url,
-              mix: effects.reverbMix,
-              gain: effects.reverbGain,
-            })
-          } else {
-            removeIr()
-          }
-        }
-
-        if (bypassChanged) {
+        if (engineReloadNeeded) {
+          await syncDemoEngine({
+            settings: {
+              modelUrl: model.url,
+              irUrl: ir.url || null,
+              reverbMix: effects.reverbMix,
+              reverbGain: effects.reverbGain,
+              bypassed: effects.bypass,
+              inputGain: effects.inputGain,
+              outputGain: effects.outputGain,
+            },
+            wasPlaying,
+            syncEngineSettings,
+            setPlaying,
+            getAudioNodes,
+            playerId: NAM_PLAYER_ID,
+          })
+        } else if (bypassChanged) {
           setBypass(effects.bypass)
         }
 
-        if (!cancelled && wasPlaying) {
-          setPlaying(true, NAM_PLAYER_ID)
+        if (cancelled || token !== syncTokenRef.current) {
+          return
         }
       } catch (error) {
         console.error('Failed to sync amp engine:', error)
@@ -145,17 +150,18 @@ export function NamPlayerSync({
   }, [
     audioReady,
     effects.bypass,
+    effects.inputGain,
+    effects.outputGain,
     effects.reverbGain,
     effects.reverbMix,
-    loadIr,
-    loadModel,
-    removeIr,
+    getAudioNodes,
     selectedIrName,
     selectedModelName,
     onSyncError,
     onSyncLoadingChange,
     setBypass,
     setPlaying,
+    syncEngineSettings,
   ])
 
   const prevDemoInputRef = useRef(selectedDemoInputName)
@@ -187,7 +193,7 @@ export function NamPlayerSync({
     const switchTrack = async () => {
       try {
         if (wasPlaying) {
-          setPlaying(false)
+          pauseDemoPlayback(setPlaying)
         }
 
         await loadAudio(input.url)
@@ -202,7 +208,13 @@ export function NamPlayerSync({
         }
 
         if (wasPlaying) {
-          setPlaying(true, NAM_PLAYER_ID)
+          await resumeDemoPlayback({
+            setPlaying,
+            getAudioNodes,
+            playerId: NAM_PLAYER_ID,
+            inputGain: effects.inputGain,
+            outputGain: effects.outputGain,
+          })
         }
       } catch (error) {
         console.error('Failed to load demo input:', error)
@@ -223,6 +235,8 @@ export function NamPlayerSync({
     }
   }, [
     audioReady,
+    effects.inputGain,
+    effects.outputGain,
     getAudioNodes,
     loadAudio,
     onSyncError,
@@ -252,8 +266,18 @@ export function NamPlayerSync({
 
     const now = audioContext.currentTime
     nodes.inputGainNode.gain.setTargetAtTime(effects.inputGain, now, 0.02)
-    nodes.outputGainNode.gain.setTargetAtTime(effects.outputGain, now, 0.02)
-  }, [audioReady, effects.inputGain, effects.outputGain, getAudioNodes])
+
+    if (audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID) {
+      nodes.outputGainNode.gain.setTargetAtTime(effects.outputGain, now, 0.02)
+    }
+  }, [
+    audioReady,
+    audioState.activePlayerId,
+    audioState.isPlaying,
+    effects.inputGain,
+    effects.outputGain,
+    getAudioNodes,
+  ])
 
   return null
 }

@@ -182,6 +182,16 @@ Then('demo playback should be active', async ({ page }) => {
     .toBe(true)
 })
 
+Then('demo playback should be audible', async ({ page }) => {
+  await expect
+    .poll(
+      async () =>
+        page.getByTestId('demo-playback-status').getAttribute('data-playback-health'),
+      { timeout: 20_000 },
+    )
+    .toBe('audible')
+})
+
 Then('the preset name should be {string}', async ({ page }, name: string) => {
   await expect(page.getByTestId('preset-name-input')).toHaveValue(name)
 })
