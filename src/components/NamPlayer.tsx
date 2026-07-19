@@ -14,7 +14,7 @@ import {
   DEMO_INPUTS,
   type NonEmptyArray,
 } from '../data/catalog'
-import type { DemoPlaybackSnapshot } from '../lib/demoPlayerStatus'
+import type { DemoPlaybackSnapshot, SyncLoadingState } from '../lib/demoPlayerStatus'
 import type { EffectSettings } from '../types/preset'
 import { DemoPlaybackStatus } from './DemoPlaybackStatus'
 import { NAM_PLAYER_ID, NamPlayerSync } from './NamPlayerSync'
@@ -40,8 +40,15 @@ export function NamPlayer({
   onDemoInputChange,
   onPlaybackStatusChange,
 }: NamPlayerProps) {
-  const [syncLoading, setSyncLoading] = useState(false)
+  const [syncState, setSyncState] = useState<SyncLoadingState>({
+    loading: false,
+    reason: null,
+  })
   const [syncError, setSyncError] = useState<string | null>(null)
+
+  const handleSyncLoadingChange = useCallback((state: SyncLoadingState) => {
+    setSyncState(state)
+  }, [])
 
   const handlePlaybackStatusChange = useCallback(
     (status: DemoPlaybackSnapshot) => {
@@ -93,12 +100,13 @@ export function NamPlayer({
         selectedIrName={selectedIrName}
         selectedDemoInputName={selectedDemoInputName}
         effects={effects}
-        onSyncLoadingChange={setSyncLoading}
+        onSyncLoadingChange={handleSyncLoadingChange}
         onSyncError={setSyncError}
       />
       <DemoPlaybackStatus
         trackName={selectedDemoInputName}
-        syncLoading={syncLoading}
+        syncLoading={syncState.loading}
+        syncLoadingReason={syncState.reason}
         errorMessage={syncError}
         onStatusChange={handlePlaybackStatusChange}
       />

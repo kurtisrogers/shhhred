@@ -157,6 +157,14 @@
   padding: 0 clamp(1.25rem, 4vw, 4rem) 3rem;
 }
 
+.panel__header-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .panel {
   background: rgba(10, 12, 28, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -761,6 +769,31 @@
     grid-template-columns: 1fr;
   }
 
+  .layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .amp-panel {
+    order: 1;
+  }
+
+  .amp-models {
+    order: 2;
+  }
+
+  .effects-panel {
+    order: 3;
+  }
+
+  .midi-panel {
+    order: 4;
+  }
+
+  .preset-panel {
+    order: 5;
+  }
+
   .amp-panel,
   .controls-panel,
   .effects-panel,
@@ -784,6 +817,17 @@
   .panel {
     padding: 1rem;
     border-radius: 18px;
+  }
+
+  .panel__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .panel__header-pills {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .factory-presets__grid,

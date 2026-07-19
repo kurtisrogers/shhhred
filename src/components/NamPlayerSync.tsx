@@ -6,15 +6,18 @@ import {
   getIrByName,
 } from '../data/catalog'
 import type { EffectSettings } from '../types/preset'
+import type { SyncLoadingReason, SyncLoadingState } from '../lib/demoPlayerStatus'
 
 export const NAM_PLAYER_ID = 'shhhred-main-player'
+
+export type { SyncLoadingReason, SyncLoadingState }
 
 interface NamPlayerSyncProps {
   selectedModelName: string
   selectedIrName: string
   selectedDemoInputName: string
   effects: EffectSettings
-  onSyncLoadingChange?: (loading: boolean) => void
+  onSyncLoadingChange?: (state: SyncLoadingState) => void
   onSyncError?: (message: string | null) => void
 }
 
@@ -38,6 +41,11 @@ export function NamPlayerSync({
   } = useT3kPlayerContext()
 
   const audioReady = audioState.initState === 'ready' && audioState.audioUrl !== null
+  const syncTokenRef = useRef(0)
+  const playbackRef = useRef(false)
+
+  playbackRef.current =
+    audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID
 
   const prevEngineSettingsRef = useRef({
     modelName: selectedModelName,
@@ -64,8 +72,9 @@ export function NamPlayerSync({
       return
     }
 
-    const wasPlaying =
-      audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID
+    const wasPlaying = playbackRef.current
+    const showLoading = modelChanged || irChanged || reverbChanged
+    const token = ++syncTokenRef.current
 
     prevEngineSettingsRef.current = {
       modelName: selectedModelName,
@@ -83,12 +92,12 @@ export function NamPlayerSync({
 
     let cancelled = false
 
-    const syncEngine = async () => {
-      if (modelChanged || irChanged || reverbChanged) {
-        onSyncLoadingChange?.(true)
-        onSyncError?.(null)
-      }
+    if (showLoading) {
+      onSyncLoadingChange?.({ loading: true, reason: 'engine' })
+      onSyncError?.(null)
+    }
 
+    const syncEngine = async () => {
       try {
         if (modelChanged) {
           await loadModel(model.url)
@@ -119,8 +128,8 @@ export function NamPlayerSync({
           onSyncError?.('Failed to update the amp engine. Try play again.')
         }
       } finally {
-        if (!cancelled && (modelChanged || irChanged || reverbChanged)) {
-          onSyncLoadingChange?.(false)
+        if (!cancelled && token === syncTokenRef.current && showLoading) {
+          onSyncLoadingChange?.({ loading: false, reason: null })
         }
       }
     }
@@ -132,8 +141,6 @@ export function NamPlayerSync({
     }
   }, [
     audioReady,
-    audioState.activePlayerId,
-    audioState.isPlaying,
     effects.bypass,
     effects.reverbGain,
     effects.reverbMix,
@@ -159,8 +166,8 @@ export function NamPlayerSync({
       return
     }
 
-    const wasPlaying =
-      audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID
+    const wasPlaying = playbackRef.current
+    const token = ++syncTokenRef.current
 
     prevDemoInputRef.current = selectedDemoInputName
 
@@ -171,7 +178,7 @@ export function NamPlayerSync({
 
     let cancelled = false
 
-    onSyncLoadingChange?.(true)
+    onSyncLoadingChange?.({ loading: true, reason: 'track' })
     onSyncError?.(null)
 
     void loadAudio(input.url)
@@ -187,8 +194,8 @@ export function NamPlayerSync({
         }
       })
       .finally(() => {
-        if (!cancelled) {
-          onSyncLoadingChange?.(false)
+        if (!cancelled && token === syncTokenRef.current) {
+          onSyncLoadingChange?.({ loading: false, reason: null })
         }
       })
 
@@ -197,9 +204,7 @@ export function NamPlayerSync({
     }
   }, [
     audioReady,
-    audioState.activePlayerId,
     audioState.audioUrl,
-    audioState.isPlaying,
     loadAudio,
     onSyncError,
     onSyncLoadingChange,
