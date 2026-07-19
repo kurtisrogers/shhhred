@@ -64,7 +64,7 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className="app" data-testid="studio-app">
       <AmbientBackground />
 
       <header className="hero">
@@ -82,7 +82,7 @@ function App() {
       </header>
 
       <main className="layout">
-        <section className="panel amp-panel">
+        <section className="panel amp-panel" data-testid="amp-rack">
           <header className="panel__header">
             <h2>Amp Rack</h2>
             <span className={`status-pill ${isLive ? 'status-pill--on' : ''}`}>
@@ -103,6 +103,7 @@ function App() {
             <label className="field">
               <span>Amp Model</span>
               <select
+                data-testid="amp-model-select"
                 value={modelName}
                 onChange={(event) => setModelName(event.target.value)}
               >
@@ -113,6 +114,7 @@ function App() {
             <label className="field">
               <span>Cabinet IR</span>
               <select
+                data-testid="cabinet-ir-select"
                 value={irName}
                 onChange={(event) => setIrName(event.target.value)}
               >
@@ -124,7 +126,7 @@ function App() {
           </div>
         </section>
 
-        <section className="panel controls-panel">
+        <section className="panel controls-panel" data-testid="tone-sculpt">
           <header className="panel__header">
             <h2>Tone Sculpt</h2>
           </header>
@@ -159,6 +161,7 @@ function App() {
           <label className="toggle">
             <input
               type="checkbox"
+              data-testid="bypass-toggle"
               checked={effects.bypass}
               onChange={(event) => updateEffect('bypass', event.target.checked)}
             />

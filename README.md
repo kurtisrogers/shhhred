@@ -39,8 +39,24 @@ npm run preview
 ### Test
 
 ```bash
-npm test
+npm test              # unit tests
+npm run test:coverage # unit tests with coverage
+npm run test:e2e      # Playwright BDD scenarios
+npm run validate      # lint + typecheck + unit + e2e
 ```
+
+### Quality gates
+
+Pre-commit hooks (Husky + lint-staged) run oxlint and related Vitest tests on staged TypeScript files.
+
+GitHub Actions CI runs on every push and pull request:
+
+- **Lint** — oxlint on `src/`, `features/`, and config files
+- **Typecheck** — `tsc -b`
+- **Unit tests** — Vitest with coverage artifact upload
+- **BDD e2e** — Playwright scenarios from `features/studio.feature`
+
+Deploy workflow on `main` runs the full quality suite before publishing to GitHub Pages.
 
 ## Browser Requirements
 

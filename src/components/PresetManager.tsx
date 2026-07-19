@@ -38,7 +38,7 @@ export function PresetManager({
   }
 
   return (
-    <section className="panel preset-panel">
+    <section className="panel preset-panel" data-testid="preset-panel">
       <header className="panel__header">
         <h2>Presets</h2>
       </header>
@@ -47,6 +47,7 @@ export function PresetManager({
         <span>Preset Name</span>
         <input
           type="text"
+          data-testid="preset-name-input"
           value={presetName}
           onChange={(event) => onPresetNameChange(event.target.value)}
           placeholder="Midnight Crunch"
@@ -54,17 +55,18 @@ export function PresetManager({
       </label>
 
       <div className="preset-actions">
-        <button type="button" className="btn btn--primary" onClick={onSave}>
+        <button type="button" className="btn btn--primary" data-testid="download-preset" onClick={onSave}>
           Download Preset
         </button>
         <button
           type="button"
           className="btn btn--ghost"
+          data-testid="load-preset"
           onClick={() => fileInputRef.current?.click()}
         >
           Load Preset
         </button>
-        <button type="button" className="btn btn--ghost" onClick={onReset}>
+        <button type="button" className="btn btn--ghost" data-testid="reset-studio" onClick={onReset}>
           Reset
         </button>
       </div>
@@ -72,6 +74,7 @@ export function PresetManager({
       <input
         ref={fileInputRef}
         type="file"
+        data-testid="preset-file-input"
         accept=".json,.shhhred.json,application/json"
         hidden
         onChange={handleFileChange}

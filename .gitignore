@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+coverage
+.features-gen
+playwright-report
+test-results
+blob-report
 
 # Editor directories and files
 .vscode/*
