@@ -62,8 +62,12 @@ Then('I should see the amp rack', async ({ page }) => {
   await expect(page.getByTestId('amp-rack')).toBeVisible()
 })
 
+Then('I should see the effects panel', async ({ page }) => {
+  await expect(page.getByTestId('effects-panel')).toBeVisible()
+})
+
 Then('I should see the tone sculpt controls', async ({ page }) => {
-  await expect(page.getByTestId('tone-sculpt')).toBeVisible()
+  await expect(page.getByTestId('effects-panel')).toBeVisible()
 })
 
 Then('I should see the MIDI panel', async ({ page }) => {
@@ -74,22 +78,10 @@ Then('I should see the preset panel', async ({ page }) => {
   await expect(page.getByTestId('preset-panel')).toBeVisible()
 })
 
-Then('I should see the factory presets', async ({ page }) => {
-  await expect(page.getByTestId('factory-presets')).toBeVisible()
-  await expect(page.getByTestId('factory-preset-5150-block-boosted')).toBeVisible()
-})
-
 Then('I should see all amp models', async ({ page }) => {
   await expect(page.getByTestId('amp-models')).toBeVisible()
   await expect(page.getByTestId('amp-model-vox-ac10')).toBeVisible()
-})
-
-When('I select the factory preset {string}', async ({ page }, presetId: string) => {
-  await page.getByTestId(`factory-preset-${presetId}`).click()
-})
-
-Then('the demo guitar should be {string}', async ({ page }, inputName: string) => {
-  await expect(page.getByTestId('demo-input-select')).toHaveValue(inputName)
+  await expect(page.getByTestId('amp-model-laney-gh100ti')).toBeVisible()
 })
 
 When('I select the amp model {string}', async ({ page }, model: string) => {
@@ -136,6 +128,21 @@ When('I reset the studio', async ({ page }) => {
 When('I start demo playback', async ({ page }) => {
   await page.getByRole('button', { name: /^Demo$/ }).click()
   await page.getByLabel('Play').click()
+})
+
+Then('I should see {int} demo tracks', async ({ page }, count: number) => {
+  await expect(page.getByTestId('demo-track-count')).toHaveText(`${count} tracks`)
+
+  const options = page.getByTestId('demo-input-select').locator('option')
+  await expect(options).toHaveCount(count)
+})
+
+When('I select the demo track {string}', async ({ page }, track: string) => {
+  await page.getByTestId('demo-input-select').selectOption(track)
+})
+
+Then('the demo track should be {string}', async ({ page }, track: string) => {
+  await expect(page.getByTestId('demo-input-select')).toHaveValue(track)
 })
 
 Then('demo playback should be active', async ({ page }) => {

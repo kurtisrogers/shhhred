@@ -50,7 +50,7 @@ export function PresetManager({
           data-testid="preset-name-input"
           value={presetName}
           onChange={(event) => onPresetNameChange(event.target.value)}
-          placeholder="Midnight Crunch"
+          placeholder="Untitled Tone"
         />
       </label>
 

@@ -15,7 +15,7 @@ import {
   type NonEmptyArray,
 } from '../data/catalog'
 import type { EffectSettings } from '../types/preset'
-import { NamPlayerSync } from './NamPlayerSync'
+import { NAM_PLAYER_ID, NamPlayerSync } from './NamPlayerSync'
 
 interface NamPlayerProps {
   selectedModelName: string
@@ -123,6 +123,7 @@ function NamPlayerSurface({
   return (
     <div className="nam-player-shell" data-testid="nam-player">
       <T3kPlayer
+        id={NAM_PLAYER_ID}
         models={models}
         irs={irs}
         inputs={inputs}

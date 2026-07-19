@@ -1,19 +1,5 @@
 import { AMP_MODELS, type AmpModel } from '../data/catalog'
 
-const CATEGORY_LABELS: Record<AmpModel['category'], string> = {
-  clean: 'Clean',
-  crunch: 'Crunch',
-  'high-gain': 'High Gain',
-  metal: 'Metal',
-}
-
-const CATEGORY_ORDER: AmpModel['category'][] = [
-  'clean',
-  'crunch',
-  'high-gain',
-  'metal',
-]
-
 interface AmpModelPickerProps {
   activeModelName: string
   onSelect: (model: AmpModel) => void
@@ -32,36 +18,27 @@ export function AmpModelPicker({
         </span>
       </header>
 
-      <div className="amp-models__groups">
-        {CATEGORY_ORDER.map((category) => {
-          const models = AMP_MODELS.filter((model) => model.category === category)
-          if (models.length === 0) {
-            return null
-          }
+      <p className="panel__hint amp-models__hint">
+        Pick any amp and audition it with the demo player below. Swap amps while
+        a track is playing — playback keeps going.
+      </p>
 
+      <div className="amp-models__grid">
+        {AMP_MODELS.map((model) => {
+          const isActive = model.name === activeModelName
           return (
-            <div key={category} className="amp-models__group">
-              <h3 className="amp-models__category">{CATEGORY_LABELS[category]}</h3>
-              <div className="amp-models__grid">
-                {models.map((model) => {
-                  const isActive = model.name === activeModelName
-                  return (
-                    <button
-                      key={model.id}
-                      type="button"
-                      className={`amp-model-card${isActive ? ' amp-model-card--active' : ''}`}
-                      data-testid={`amp-model-${model.id}`}
-                      onClick={() => onSelect(model)}
-                    >
-                      <span className="amp-model-card__name">{model.name}</span>
-                      <span className="amp-model-card__description">
-                        {model.description}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
+            <button
+              key={model.id}
+              type="button"
+              className={`amp-model-card${isActive ? ' amp-model-card--active' : ''}`}
+              data-testid={`amp-model-${model.id}`}
+              onClick={() => onSelect(model)}
+            >
+              <span className="amp-model-card__name">{model.name}</span>
+              <span className="amp-model-card__description">
+                {model.description}
+              </span>
+            </button>
           )
         })}
       </div>
