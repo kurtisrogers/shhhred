@@ -57,6 +57,12 @@ Feature: Shhhred Studio
     Then demo playback should be active
     And demo playback should be audible
 
+  Scenario: Play selected track after changing before playback
+    When I select the demo track "Metalcore - Guitar"
+    And I start demo playback
+    Then the demo audio source should contain "metalcore-guitar.wav"
+    And demo playback should be audible
+
   Scenario: Swap demo track during playback
     When I start demo playback
     And I select the demo track "Metalcore - Guitar"
