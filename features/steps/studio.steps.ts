@@ -133,6 +133,28 @@ When('I reset the studio', async ({ page }) => {
   await page.getByTestId('reset-studio').click()
 })
 
+When('I start demo playback', async ({ page }) => {
+  await page.getByRole('button', { name: /^Demo$/ }).click()
+  await page.getByLabel('Play').click()
+})
+
+Then('demo playback should be active', async ({ page }) => {
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible({
+    timeout: 20_000,
+  })
+
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(() => {
+          const audio = document.querySelector('audio')
+          return audio ? !audio.paused && audio.currentTime > 0 : false
+        }),
+      { timeout: 20_000 },
+    )
+    .toBe(true)
+})
+
 Then('the preset name should be {string}', async ({ page }, name: string) => {
   await expect(page.getByTestId('preset-name-input')).toHaveValue(name)
 })

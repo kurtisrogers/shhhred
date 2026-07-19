@@ -37,6 +37,10 @@ Feature: Shhhred Studio
     And the cabinet IR should be "Celestion 4x12"
     And the preset name should be "Midnight Crunch"
 
+  Scenario: Demo playback starts from the amp rack
+    When I start demo playback
+    Then demo playback should be active
+
   Scenario: Load a saved preset file
     Given I have a preset file named "arena-lead.shhhred.json"
     When I load the preset file

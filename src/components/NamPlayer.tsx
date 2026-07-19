@@ -85,25 +85,60 @@ export function NamPlayer({
         selectedDemoInputName={selectedDemoInputName}
         effects={effects}
       />
-      <div className="nam-player-shell" data-testid="nam-player">
-        <T3kPlayer
-          models={models}
-          irs={irs}
-          inputs={inputs}
-          previewMode={PREVIEW_MODE.MODEL}
-          onModelChange={(model) => onModelChange(model.name)}
-          onIrChange={(ir) => onIrChange(ir.name)}
-          onInputChange={(input) => onDemoInputChange(input.name)}
-          onPlayDemo={() => onDemoStart()}
-          onPlayLive={() => onLiveStart()}
-          infoSlot={
-            <div className="nam-overlay">
-              <span>Neural Amp Modeler</span>
-              <strong>Demo + Live Input Ready</strong>
-            </div>
-          }
-        />
-      </div>
+      <NamPlayerSurface
+        models={models}
+        irs={irs}
+        inputs={inputs}
+        onModelChange={onModelChange}
+        onIrChange={onIrChange}
+        onDemoInputChange={onDemoInputChange}
+        onDemoStart={onDemoStart}
+        onLiveStart={onLiveStart}
+      />
     </T3kPlayerProvider>
+  )
+}
+
+interface NamPlayerSurfaceProps {
+  models: NonEmptyArray<Model>
+  irs: NonEmptyArray<IR>
+  inputs: NonEmptyArray<Input>
+  onModelChange: (name: string) => void
+  onIrChange: (name: string) => void
+  onDemoInputChange: (name: string) => void
+  onDemoStart: () => void
+  onLiveStart: () => void
+}
+
+function NamPlayerSurface({
+  models,
+  irs,
+  inputs,
+  onModelChange,
+  onIrChange,
+  onDemoInputChange,
+  onDemoStart,
+  onLiveStart,
+}: NamPlayerSurfaceProps) {
+  return (
+    <div className="nam-player-shell" data-testid="nam-player">
+      <T3kPlayer
+        models={models}
+        irs={irs}
+        inputs={inputs}
+        previewMode={PREVIEW_MODE.MODEL}
+        onModelChange={(model) => onModelChange(model.name)}
+        onIrChange={(ir) => onIrChange(ir.name)}
+        onInputChange={(input) => onDemoInputChange(input.name)}
+        onPlayDemo={() => onDemoStart()}
+        onPlayLive={() => onLiveStart()}
+        infoSlot={
+          <div className="nam-overlay">
+            <span>Neural Amp Modeler</span>
+            <strong>Demo + Live Input Ready</strong>
+          </div>
+        }
+      />
+    </div>
   )
 }
