@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useT3kPlayerContext } from 'neural-amp-modeler-wasm'
 import {
   getAmpByName,
@@ -28,9 +28,39 @@ export function NamPlayerSync({
     setBypass,
   } = useT3kPlayerContext()
 
+  const audioReady = audioState.initState === 'ready' && audioState.audioUrl !== null
+
+  const prevEngineSettingsRef = useRef({
+    modelName: selectedModelName,
+    irName: selectedIrName,
+    bypass: effects.bypass,
+    reverbMix: effects.reverbMix,
+    reverbGain: effects.reverbGain,
+  })
+
   useEffect(() => {
-    if (audioState.initState !== 'ready') {
+    if (!audioReady) {
       return
+    }
+
+    const prev = prevEngineSettingsRef.current
+    const modelChanged = prev.modelName !== selectedModelName
+    const irChanged = prev.irName !== selectedIrName
+    const bypassChanged = prev.bypass !== effects.bypass
+    const reverbChanged =
+      prev.reverbMix !== effects.reverbMix ||
+      prev.reverbGain !== effects.reverbGain
+
+    if (!modelChanged && !irChanged && !bypassChanged && !reverbChanged) {
+      return
+    }
+
+    prevEngineSettingsRef.current = {
+      modelName: selectedModelName,
+      irName: selectedIrName,
+      bypass: effects.bypass,
+      reverbMix: effects.reverbMix,
+      reverbGain: effects.reverbGain,
     }
 
     const model = getAmpByName(selectedModelName)
@@ -39,17 +69,21 @@ export function NamPlayerSync({
       return
     }
 
-    void syncEngineSettings({
-      modelUrl: model.url,
-      ir: {
-        url: ir.url || null,
-        mix: effects.reverbMix,
-        gain: effects.reverbGain,
-      },
-      bypassed: effects.bypass,
-    })
+    const timer = window.setTimeout(() => {
+      void syncEngineSettings({
+        modelUrl: model.url,
+        ir: {
+          url: ir.url || null,
+          mix: effects.reverbMix,
+          gain: effects.reverbGain,
+        },
+        bypassed: effects.bypass,
+      })
+    }, 0)
+
+    return () => window.clearTimeout(timer)
   }, [
-    audioState.initState,
+    audioReady,
     effects.bypass,
     effects.reverbGain,
     effects.reverbMix,
@@ -58,10 +92,18 @@ export function NamPlayerSync({
     syncEngineSettings,
   ])
 
+  const prevDemoInputRef = useRef(selectedDemoInputName)
+
   useEffect(() => {
-    if (audioState.initState !== 'ready') {
+    if (!audioReady) {
       return
     }
+
+    if (prevDemoInputRef.current === selectedDemoInputName) {
+      return
+    }
+
+    prevDemoInputRef.current = selectedDemoInputName
 
     const input = getDemoInputByName(selectedDemoInputName)
     if (!input || audioState.audioUrl === input.url) {
@@ -69,23 +111,18 @@ export function NamPlayerSync({
     }
 
     void loadAudio(input.url)
-  }, [
-    audioState.audioUrl,
-    audioState.initState,
-    loadAudio,
-    selectedDemoInputName,
-  ])
+  }, [audioReady, audioState.audioUrl, loadAudio, selectedDemoInputName])
 
   useEffect(() => {
-    if (audioState.initState !== 'ready') {
+    if (!audioReady) {
       return
     }
 
     setBypass(effects.bypass)
-  }, [audioState.initState, effects.bypass, setBypass])
+  }, [audioReady, effects.bypass, setBypass])
 
   useEffect(() => {
-    if (audioState.initState !== 'ready') {
+    if (!audioReady) {
       return
     }
 
@@ -98,12 +135,7 @@ export function NamPlayerSync({
     const now = audioContext.currentTime
     nodes.inputGainNode.gain.setTargetAtTime(effects.inputGain, now, 0.02)
     nodes.outputGainNode.gain.setTargetAtTime(effects.outputGain, now, 0.02)
-  }, [
-    audioState.initState,
-    effects.inputGain,
-    effects.outputGain,
-    getAudioNodes,
-  ])
+  }, [audioReady, effects.inputGain, effects.outputGain, getAudioNodes])
 
   return null
 }

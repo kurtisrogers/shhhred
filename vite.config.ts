@@ -1,7 +1,18 @@
+import { readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { defineConfig, type Plugin } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const base = process.env.GITHUB_PAGES === 'true' ? '/shhhred/' : '/'
+const wasmModuleUrl = `${base}t3k-wasm-module.js`
+
+function patchWasmAssetPaths(content: string): string {
+  if (base === '/') {
+    return content
+  }
+
+  return content.replaceAll('"/t3k-wasm-module.', `"${base}t3k-wasm-module.`)
+}
 
 function wasmBasePathPlugin(): Plugin {
   return {
@@ -18,13 +29,22 @@ function wasmBasePathPlugin(): Plugin {
 
         file.code = file.code.replaceAll(
           '`/t3k-wasm-module.js`',
-          '`${import.meta.env.BASE_URL}t3k-wasm-module.js`',
+          JSON.stringify(wasmModuleUrl),
         )
         file.code = file.code.replaceAll(
           "'/t3k-wasm-module.js'",
-          '`${import.meta.env.BASE_URL}t3k-wasm-module.js`',
+          JSON.stringify(wasmModuleUrl),
         )
       }
+    },
+    closeBundle() {
+      if (base === '/') {
+        return
+      }
+
+      const wasmModulePath = join(process.cwd(), 'dist', 't3k-wasm-module.js')
+      const wasmModuleSource = readFileSync(wasmModulePath, 'utf8')
+      writeFileSync(wasmModulePath, patchWasmAssetPaths(wasmModuleSource))
     },
   }
 }

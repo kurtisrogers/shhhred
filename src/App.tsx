@@ -142,6 +142,12 @@ function App() {
             {modelName}
           </p>
 
+          <p className="demo-audition-hint" data-testid="demo-audition-hint">
+            <strong>Demo audition</strong> — choose a DI track below, pick any amp
+            model above, switch to the <em>Demo</em> tab, and hit play. No guitar
+            needed.
+          </p>
+
           <NamPlayer
             selectedModelName={modelName}
             selectedIrName={irName}

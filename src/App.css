@@ -1,7 +1,8 @@
 .app {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .ambient {
@@ -375,6 +376,30 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+}
+
+.nam-player-shell > div {
+  max-width: 100%;
+}
+
+.demo-audition-hint {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 245, 212, 0.18);
+  background: rgba(0, 245, 212, 0.06);
+  color: rgba(244, 247, 255, 0.82);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.demo-audition-hint strong {
+  color: #00f5d4;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .nam-overlay {
@@ -576,6 +601,10 @@
     grid-template-columns: 1fr;
   }
 
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
   .amp-panel,
   .controls-panel,
   .midi-panel,
@@ -586,7 +615,27 @@
 
 @media (max-width: 720px) {
   .hero {
-    padding-top: 2rem;
+    padding: 2rem 1rem 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .layout {
+    padding: 0 1rem 2rem;
+    gap: 1rem;
+  }
+
+  .panel {
+    padding: 1rem;
+    border-radius: 18px;
+  }
+
+  .factory-presets__grid,
+  .amp-models__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__subtitle {
+    font-size: 1rem;
   }
 
   .model-selectors,
@@ -595,5 +644,24 @@
   .midi-readout,
   .knob-grid {
     grid-template-columns: 1fr;
+  }
+
+  .knob__ring {
+    width: 92px;
+    height: 92px;
+  }
+
+  .preset-actions {
+    flex-direction: column;
+  }
+
+  .preset-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nam-player-shell .bg-zinc-900 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
   }
 }

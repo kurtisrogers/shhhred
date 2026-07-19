@@ -5,6 +5,8 @@ const testDir = defineBddConfig({
   featuresRoot: './features',
 })
 
+const previewBaseUrl = 'http://127.0.0.1:4173/shhhred/'
+
 export default defineConfig({
   testDir,
   fullyParallel: true,
@@ -13,7 +15,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: previewBaseUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -25,8 +27,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --host 127.0.0.1 --port 4173',
-    url: 'http://127.0.0.1:4173',
+    command:
+      'GITHUB_PAGES=true npm run build && GITHUB_PAGES=true npm run preview -- --host 127.0.0.1 --port 4173',
+    url: previewBaseUrl,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

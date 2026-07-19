@@ -38,6 +38,13 @@ if (typeof window === 'undefined') {
     )
   })
 } else {
+  const coiScriptUrl =
+    document.currentScript?.src ??
+    [...document.scripts]
+      .reverse()
+      .find((script) => script.src.includes('coi-serviceworker.js'))?.src ??
+    new URL('coi-serviceworker.js', window.location.href).href
+
   ;(async () => {
     if (window.crossOriginIsolated) return
     const registration = await navigator.serviceWorker.getRegistration()
@@ -58,7 +65,7 @@ if (typeof window === 'undefined') {
       return
     }
     try {
-      await navigator.serviceWorker.register(window.document.currentScript.src)
+      await navigator.serviceWorker.register(coiScriptUrl)
       console.log('COI service worker registered, reloading')
       window.sessionStorage.setItem('coiReloadedBySelf', 'true')
       window.location.reload()

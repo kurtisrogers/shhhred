@@ -43,6 +43,7 @@ describe('App', () => {
     expect(screen.getByTestId('factory-presets')).toBeInTheDocument()
     expect(screen.getByTestId('amp-models')).toBeInTheDocument()
     expect(screen.getByTestId('amp-rack')).toBeInTheDocument()
+    expect(screen.getByTestId('demo-audition-hint')).toBeInTheDocument()
     expect(screen.getByTestId('tone-sculpt')).toBeInTheDocument()
     expect(screen.getByTestId('midi-panel')).toBeInTheDocument()
     expect(screen.getByTestId('preset-panel')).toBeInTheDocument()
