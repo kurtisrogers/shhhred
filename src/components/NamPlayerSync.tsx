@@ -44,9 +44,11 @@ export function NamPlayerSync({
   const audioReady = audioState.initState === 'ready' && audioState.audioUrl !== null
   const syncTokenRef = useRef(0)
   const playbackRef = useRef(false)
+  const loadedAudioUrlRef = useRef(audioState.audioUrl)
 
   playbackRef.current =
     audioState.isPlaying && audioState.activePlayerId === NAM_PLAYER_ID
+  loadedAudioUrlRef.current = audioState.audioUrl
 
   const prevEngineSettingsRef = useRef({
     modelName: selectedModelName,
@@ -173,7 +175,7 @@ export function NamPlayerSync({
     prevDemoInputRef.current = selectedDemoInputName
 
     const input = getDemoInputByName(selectedDemoInputName)
-    if (!input || audioSourcesMatch(audioState.audioUrl, input.url)) {
+    if (!input || audioSourcesMatch(loadedAudioUrlRef.current, input.url)) {
       return
     }
 
@@ -184,14 +186,22 @@ export function NamPlayerSync({
 
     const switchTrack = async () => {
       try {
+        if (wasPlaying) {
+          setPlaying(false)
+        }
+
         await loadAudio(input.url)
+
+        if (cancelled || token !== syncTokenRef.current) {
+          return
+        }
 
         const audioElement = getAudioNodes().audioElement
         if (audioElement) {
           audioElement.currentTime = 0
         }
 
-        if (!cancelled && wasPlaying) {
+        if (wasPlaying) {
           setPlaying(true, NAM_PLAYER_ID)
         }
       } catch (error) {
@@ -213,7 +223,6 @@ export function NamPlayerSync({
     }
   }, [
     audioReady,
-    audioState.audioUrl,
     getAudioNodes,
     loadAudio,
     onSyncError,
