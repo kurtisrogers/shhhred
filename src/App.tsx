@@ -14,6 +14,10 @@ import {
 } from './data/catalog'
 import type { AmpModel } from './data/catalog'
 import { useMidi } from './hooks/useMidi'
+import {
+  getPlaybackPhaseLabel,
+  type DemoPlaybackSnapshot,
+} from './lib/demoPlayerStatus'
 import { createPreset, downloadPreset } from './lib/presets'
 import { DEFAULT_STUDIO } from './lib/studioDefaults'
 import {
@@ -30,7 +34,19 @@ function App() {
   const [demoInputName, setDemoInputName] = useState(DEFAULT_STUDIO.demoInputName)
   const [presetName, setPresetName] = useState(DEFAULT_STUDIO.presetName)
   const [midiMappings] = useState(DEFAULT_MIDI_MAPPINGS)
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [playbackStatus, setPlaybackStatus] = useState<DemoPlaybackSnapshot>({
+    phase: 'idle',
+    message: 'Ready — press play to audition',
+    trackName: DEFAULT_STUDIO.demoInputName,
+    currentTime: 0,
+    duration: 0,
+    progress: 0,
+    isPlaying: false,
+  })
+
+  const handlePlaybackStatusChange = useCallback((status: DemoPlaybackSnapshot) => {
+    setPlaybackStatus(status)
+  }, [])
 
   const handleMidiCc = useCallback((nextEffects: EffectSettings) => {
     setEffects(nextEffects)
@@ -96,7 +112,7 @@ function App() {
             controllers, and save tones you can reload anywhere.
           </p>
         </div>
-        <SpectrumVisualizer active={isPlaying} />
+        <SpectrumVisualizer active={playbackStatus.isPlaying} />
       </header>
 
       <main className="layout">
@@ -108,8 +124,11 @@ function App() {
             <span className="status-pill status-pill--on" data-testid="demo-track-count">
               {DEMO_INPUT_NAMES.length} tracks
             </span>
-            <span className={`status-pill ${isPlaying ? 'status-pill--on' : ''}`}>
-              {isPlaying ? 'Playing' : 'Ready'}
+            <span
+              className={`status-pill status-pill--${playbackStatus.phase}`}
+              data-testid="demo-playback-phase-pill"
+            >
+              {getPlaybackPhaseLabel(playbackStatus.phase)}
             </span>
           </header>
           <p className="sr-only" data-testid="active-amp-model">
@@ -117,9 +136,9 @@ function App() {
           </p>
 
           <p className="demo-audition-hint" data-testid="demo-audition-hint">
-            <strong>Demo audition</strong> — pick from {DEMO_INPUT_NAMES.length}{' '}
-            guitar and bass DI tracks below, switch to the <em>Demo</em> tab, and hit
-            play. Swap amps or cabinets while the track is running.
+            Choose a DI track below, then press play in the demo player. The status
+            bar shows when the engine is starting, a track is loading, playing, or
+            paused.
           </p>
 
           <NamPlayer
@@ -130,8 +149,7 @@ function App() {
             onModelChange={setModelName}
             onIrChange={setIrName}
             onDemoInputChange={setDemoInputName}
-            onDemoStart={() => setIsPlaying(true)}
-            onLiveStart={() => setIsPlaying(true)}
+            onPlaybackStatusChange={handlePlaybackStatusChange}
           />
 
           <div className="model-selectors model-selectors--two">

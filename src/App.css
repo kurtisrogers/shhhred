@@ -361,6 +361,172 @@
   box-shadow: 0 0 24px rgba(0, 245, 212, 0.25);
 }
 
+.status-pill--idle {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(244, 247, 255, 0.7);
+}
+
+.status-pill--initializing,
+.status-pill--loading {
+  background: rgba(255, 193, 7, 0.16);
+  color: #ffd166;
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+}
+
+.status-pill--playing {
+  background: rgba(0, 245, 212, 0.14);
+  color: #00f5d4;
+  box-shadow: 0 0 24px rgba(0, 245, 212, 0.25);
+}
+
+.status-pill--paused {
+  background: rgba(255, 45, 149, 0.14);
+  color: #ff8ec8;
+}
+
+.status-pill--error {
+  background: rgba(255, 107, 138, 0.16);
+  color: #ff6b8a;
+}
+
+.demo-playback-status {
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.demo-playback-status--initializing,
+.demo-playback-status--loading {
+  border-color: rgba(255, 193, 7, 0.28);
+  background: rgba(255, 193, 7, 0.08);
+}
+
+.demo-playback-status--playing {
+  border-color: rgba(0, 245, 212, 0.28);
+  background: rgba(0, 245, 212, 0.06);
+}
+
+.demo-playback-status--paused {
+  border-color: rgba(255, 45, 149, 0.24);
+  background: rgba(255, 45, 149, 0.06);
+}
+
+.demo-playback-status--error {
+  border-color: rgba(255, 107, 138, 0.35);
+  background: rgba(255, 107, 138, 0.08);
+}
+
+.demo-playback-status__header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.demo-playback-status__pill {
+  flex-shrink: 0;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.demo-playback-status__pill--idle {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(244, 247, 255, 0.75);
+}
+
+.demo-playback-status__pill--initializing,
+.demo-playback-status__pill--loading {
+  background: rgba(255, 193, 7, 0.18);
+  color: #ffd166;
+}
+
+.demo-playback-status__pill--playing {
+  background: rgba(0, 245, 212, 0.16);
+  color: #00f5d4;
+}
+
+.demo-playback-status__pill--paused {
+  background: rgba(255, 45, 149, 0.16);
+  color: #ff8ec8;
+}
+
+.demo-playback-status__pill--error {
+  background: rgba(255, 107, 138, 0.18);
+  color: #ff6b8a;
+}
+
+.demo-playback-status__message {
+  margin: 0;
+  color: rgba(244, 247, 255, 0.88);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.demo-playback-status__progress {
+  margin-top: 0.85rem;
+}
+
+.demo-playback-status__track {
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.demo-playback-status__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #00f5d4, #ff2d95);
+  transition: width 0.15s linear;
+}
+
+.demo-playback-status__time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.45rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(244, 247, 255, 0.62);
+}
+
+.demo-playback-status__hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.86rem;
+  color: rgba(244, 247, 255, 0.68);
+}
+
+.demo-playback-status--initializing .demo-playback-status__pill--initializing,
+.demo-playback-status--loading .demo-playback-status__pill--loading {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.demo-playback-status--initializing .demo-playback-status__pill--initializing::before,
+.demo-playback-status--loading .demo-playback-status__pill--loading::before {
+  content: '';
+  position: absolute;
+  left: 0.55rem;
+  top: 50%;
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-top: -0.325rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: demo-status-spin 0.8s linear infinite;
+}
+
+@keyframes demo-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .nam-player-shell {
   border-radius: 18px;
   overflow: hidden;
@@ -654,5 +820,10 @@
   .nam-player-shell .bg-zinc-900 {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
+  }
+
+  .demo-playback-status__header {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
