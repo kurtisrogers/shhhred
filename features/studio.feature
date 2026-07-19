@@ -11,6 +11,12 @@ Feature: Shhhred Studio
     And I should see the tone sculpt controls
     And I should see the MIDI panel
     And I should see the preset panel
+    And I should see the factory presets
+
+  Scenario: Load a classic 5150 factory preset
+    When I select the factory preset "5150-block-boosted"
+    Then the amp model should be "Peavey 5150 Block Letter (Boosted)"
+    And the demo guitar should be "Metalcore - Guitar"
 
   Scenario: Change amp model and cabinet IR
     When I select the amp model "Fender Deluxe Reverb"
@@ -24,11 +30,10 @@ Feature: Shhhred Studio
     Then a preset file named "arena-lead.shhhred.json" should be downloaded
 
   Scenario: Reset studio to defaults
-    When I select the amp model "Fender Deluxe Reverb"
-    And I select the cabinet IR "None"
+    When I select the factory preset "6505-red-channel"
     And I reset the studio
     Then the amp model should be "Vox AC10"
-    And the cabinet IR should be "Celestion"
+    And the cabinet IR should be "Celestion 4x12"
     And the preset name should be "Midnight Crunch"
 
   Scenario: Load a saved preset file

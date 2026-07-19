@@ -11,6 +11,7 @@ const presetFixture = {
   name: 'Arena Lead',
   modelName: 'Fender Deluxe Reverb',
   irName: 'EMT 140 Plate',
+  demoInputName: 'Hammer Lead - Guitar',
   effects: {
     inputGain: 0.9,
     outputGain: 0.7,
@@ -47,6 +48,19 @@ Then('I should see the MIDI panel', async ({ page }) => {
 
 Then('I should see the preset panel', async ({ page }) => {
   await expect(page.getByTestId('preset-panel')).toBeVisible()
+})
+
+Then('I should see the factory presets', async ({ page }) => {
+  await expect(page.getByTestId('factory-presets')).toBeVisible()
+  await expect(page.getByTestId('factory-preset-5150-block-boosted')).toBeVisible()
+})
+
+When('I select the factory preset {string}', async ({ page }, presetId: string) => {
+  await page.getByTestId(`factory-preset-${presetId}`).click()
+})
+
+Then('the demo guitar should be {string}', async ({ page }, inputName: string) => {
+  await expect(page.getByTestId('demo-input-select')).toHaveValue(inputName)
 })
 
 When('I select the amp model {string}', async ({ page }, model: string) => {
