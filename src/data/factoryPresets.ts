@@ -186,6 +186,21 @@ export const FACTORY_PRESETS: FactoryPreset[] = [
       reverbMix: 0.14,
     },
   },
+  {
+    id: 'iommi-sabbath',
+    name: 'Iron Sabbath',
+    tagline: 'Tony Iommi Laney doom and darkness',
+    modelName: 'Laney GH100TI Iommi',
+    irName: 'Celestion 4x12',
+    demoInputName: 'Power Thrash - Guitar',
+    effects: {
+      ...DEFAULT_EFFECTS,
+      inputGain: 0.84,
+      outputGain: 0.74,
+      tone: 0.52,
+      reverbMix: 0.12,
+    },
+  },
 ]
 
 export const DEFAULT_FACTORY_PRESET = FACTORY_PRESETS[0]
