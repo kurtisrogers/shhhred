@@ -1,5 +1,7 @@
 # Shhhred Studio
 
+[![CI](https://github.com/kurtisrogers/shhhred/actions/workflows/ci.yml/badge.svg)](https://github.com/kurtisrogers/shhhred/actions/workflows/ci.yml)
+
 A glam browser-based guitar studio powered by [Neural Amp Modeler (NAM)](https://github.com/sdatkinson/neural-amp-modeler). Plug in your guitar, shape your tone with neural amp modeling, control settings via MIDI, and save reusable presets.
 
 **Live demo:** https://kurtisrogers.github.io/shhhred/
@@ -51,14 +53,22 @@ npm run validate      # lint + typecheck + unit + e2e
 
 Pre-commit hooks (Husky + lint-staged) run oxlint and related Vitest tests on staged TypeScript files.
 
-GitHub Actions CI runs on every push and pull request:
+GitHub Actions CI (`.github/workflows/ci.yml`) runs on every push and pull request:
 
-- **Lint** — oxlint on `src/`, `features/`, and config files
-- **Typecheck** — `tsc -b`
-- **Unit tests** — Vitest with coverage artifact upload
-- **BDD e2e** — Playwright scenarios from `features/studio.feature`
+| Job | What it runs |
+|-----|--------------|
+| **Lint, Typecheck & Unit Tests** | oxlint, `tsc -b`, Vitest with coverage artifact upload |
+| **Playwright BDD** | Playwright scenarios from `features/*.feature` |
+| **All checks passed** | Aggregate gate — use this as the required status check for branch protection |
+| **Deploy GitHub Pages** | Builds and publishes to GitHub Pages (push to `main` only, after tests pass) |
 
-Deploy workflow on `main` runs the full quality suite before publishing to GitHub Pages.
+#### Require checks before merge
+
+In **Settings → Branches → Branch protection rules** for `main`, enable **Require status checks to pass before merging** and select:
+
+- `All checks passed`
+
+Optionally also require the individual jobs (`Lint, Typecheck & Unit Tests`, `Playwright BDD`) if you want granular visibility in the PR UI.
 
 ## Browser Requirements
 
