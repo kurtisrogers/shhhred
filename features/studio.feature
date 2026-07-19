@@ -64,3 +64,5 @@ Feature: Shhhred Studio
     When I start demo playback
     And I scroll to the amp models section
     Then the mobile sticky player should be visible
+    When I scroll back to the demo player
+    Then the mobile sticky player should be hidden

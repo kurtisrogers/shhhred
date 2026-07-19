@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useT3kPlayerContext } from 'neural-amp-modeler-wasm'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { NAM_PLAYER_SHELL_SELECTOR, toggleMainPlayerPlayback } from '../lib/demoPlayerControls'
@@ -36,22 +37,37 @@ export function MobileStickyPlayer({
       return
     }
 
-    const element = document.querySelector(NAM_PLAYER_SHELL_SELECTOR)
-    if (!element) {
-      return
+    let observer: IntersectionObserver | null = null
+    let retryTimer: number | undefined
+
+    const attachObserver = () => {
+      const element = document.querySelector(NAM_PLAYER_SHELL_SELECTOR)
+      if (!element) {
+        return false
+      }
+
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          setPlayerVisible(entry.isIntersecting)
+        },
+        { threshold: 0 },
+      )
+      observer.observe(element)
+
+      return true
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setPlayerVisible(entry.isIntersecting)
-      },
-      { threshold: 0.2 },
-    )
-
-    observer.observe(element)
+    if (!attachObserver()) {
+      retryTimer = window.setTimeout(() => {
+        attachObserver()
+      }, 100)
+    }
 
     return () => {
-      observer.disconnect()
+      if (retryTimer !== undefined) {
+        window.clearTimeout(retryTimer)
+      }
+      observer?.disconnect()
     }
   }, [isMobile])
 
@@ -116,7 +132,7 @@ export function MobileStickyPlayer({
     return null
   }
 
-  return (
+  return createPortal(
     <div
       className={`mobile-sticky-player${showBar ? ' mobile-sticky-player--visible' : ''}`}
       data-testid="mobile-sticky-player"
@@ -174,6 +190,7 @@ export function MobileStickyPlayer({
           )}
         </>
       )}
-    </div>
+    </div>,
+    document.body,
   )
 }
