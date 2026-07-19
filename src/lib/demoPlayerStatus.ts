@@ -1,5 +1,12 @@
 export type AudioInitState = 'uninitialized' | 'initializing' | 'ready'
 
+export type SyncLoadingReason = 'track' | 'engine'
+
+export interface SyncLoadingState {
+  loading: boolean
+  reason: SyncLoadingReason | null
+}
+
 export type DemoPlaybackPhase =
   | 'idle'
   | 'initializing'
@@ -35,6 +42,7 @@ interface ResolveDemoPlaybackStatusInput {
   isPlaying: boolean
   isActivePlayer: boolean
   syncLoading: boolean
+  syncLoadingReason?: SyncLoadingReason | null
   trackName: string
   currentTime: number
   duration: number
@@ -50,6 +58,7 @@ export function resolveDemoPlaybackStatus(
     isPlaying,
     isActivePlayer,
     syncLoading,
+    syncLoadingReason = null,
     trackName,
     currentTime,
     duration,
@@ -73,9 +82,27 @@ export function resolveDemoPlaybackStatus(
   }
 
   if (syncLoading) {
+    if (isPlaying && isActivePlayer) {
+      return {
+        phase: 'playing',
+        message:
+          syncLoadingReason === 'engine'
+            ? `Playing — switching amp…`
+            : `Playing — loading “${trackName}”…`,
+        trackName,
+        currentTime,
+        duration,
+        progress,
+        isPlaying: true,
+      }
+    }
+
     return {
       phase: 'loading',
-      message: `Loading “${trackName}”…`,
+      message:
+        syncLoadingReason === 'engine'
+          ? 'Switching amp…'
+          : `Loading “${trackName}”…`,
       trackName,
       currentTime,
       duration,
