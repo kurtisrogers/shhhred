@@ -41,6 +41,7 @@ describe('App', () => {
     expect(screen.getByTestId('studio-app')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /Shhhred/i })).toBeInTheDocument()
     expect(screen.getByTestId('factory-presets')).toBeInTheDocument()
+    expect(screen.getByTestId('amp-models')).toBeInTheDocument()
     expect(screen.getByTestId('amp-rack')).toBeInTheDocument()
     expect(screen.getByTestId('tone-sculpt')).toBeInTheDocument()
     expect(screen.getByTestId('midi-panel')).toBeInTheDocument()
@@ -54,7 +55,7 @@ describe('App', () => {
 
     await user.click(screen.getByTestId('factory-preset-5150-block-boosted'))
 
-    expect(screen.getByTestId('amp-model-select')).toHaveValue(
+    expect(screen.getByTestId('active-amp-model')).toHaveTextContent(
       'Peavey 5150 Block Letter (Boosted)',
     )
     expect(screen.getByTestId('demo-input-select')).toHaveValue('Metalcore - Guitar')
@@ -65,13 +66,13 @@ describe('App', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    await user.selectOptions(
-      screen.getByTestId('amp-model-select'),
+    await user.click(screen.getByTestId('amp-model-fender-deluxe'))
+
+    expect(screen.getByTestId('active-amp-model')).toHaveTextContent(
       'Fender Deluxe Reverb',
     )
-
-    expect(screen.getByTestId('amp-model-select')).toHaveValue(
-      'Fender Deluxe Reverb',
+    expect(screen.getByTestId('amp-model-fender-deluxe')).toHaveClass(
+      'amp-model-card--active',
     )
   })
 
@@ -82,7 +83,7 @@ describe('App', () => {
     await user.click(screen.getByTestId('factory-preset-5150-block-boosted'))
     await user.click(screen.getByTestId('reset-studio'))
 
-    expect(screen.getByTestId('amp-model-select')).toHaveValue('Vox AC10')
+    expect(screen.getByTestId('active-amp-model')).toHaveTextContent('Vox AC10')
     expect(screen.getByTestId('cabinet-ir-select')).toHaveValue('Celestion 4x12')
     expect(screen.getByTestId('preset-name-input')).toHaveValue('Midnight Crunch')
   })

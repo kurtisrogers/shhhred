@@ -12,6 +12,7 @@ Feature: Shhhred Studio
     And I should see the MIDI panel
     And I should see the preset panel
     And I should see the factory presets
+    And I should see all amp models
 
   Scenario: Load a classic 5150 factory preset
     When I select the factory preset "5150-block-boosted"

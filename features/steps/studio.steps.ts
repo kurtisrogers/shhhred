@@ -3,6 +3,30 @@ import { createBdd } from 'playwright-bdd'
 
 const { Given, When, Then } = createBdd()
 
+const AMP_MODEL_IDS: Record<string, string> = {
+  'Vox AC10': 'vox-ac10',
+  'Fender Deluxe Reverb': 'fender-deluxe',
+  'Peavey 5150 Block Letter (Boosted)': 'peavey-5150-block-boosted',
+  'Peavey 5150 Block Letter (No Boost)': 'peavey-5150-block-clean',
+  'Peavey 6505+ Red Channel': 'peavey-6505-red',
+  'Marshall JCM2000 Crunch': 'marshall-jcm2000-crunch',
+  'Marshall JCM2000 Lead': 'marshall-jcm2000-lead',
+  'Mesa Mark IV': 'mesa-mark-iv',
+  'Soldano SLO': 'soldano-slo',
+  'ENGL Savage': 'engl-savage',
+  'Orange Rockerverb': 'orange-rockerverb',
+  'Friedman DSM': 'friedman-dsm',
+  'Laney GH100TI': 'laney-gh100ti',
+}
+
+function getAmpIdByName(name: string): string {
+  const id = AMP_MODEL_IDS[name]
+  if (!id) {
+    throw new Error(`Unknown amp model: ${name}`)
+  }
+  return id
+}
+
 let lastDownload: Download | undefined
 let presetFile: { name: string; mimeType: string; buffer: Buffer } | undefined
 
@@ -55,6 +79,11 @@ Then('I should see the factory presets', async ({ page }) => {
   await expect(page.getByTestId('factory-preset-5150-block-boosted')).toBeVisible()
 })
 
+Then('I should see all amp models', async ({ page }) => {
+  await expect(page.getByTestId('amp-models')).toBeVisible()
+  await expect(page.getByTestId('amp-model-vox-ac10')).toBeVisible()
+})
+
 When('I select the factory preset {string}', async ({ page }, presetId: string) => {
   await page.getByTestId(`factory-preset-${presetId}`).click()
 })
@@ -64,7 +93,7 @@ Then('the demo guitar should be {string}', async ({ page }, inputName: string) =
 })
 
 When('I select the amp model {string}', async ({ page }, model: string) => {
-  await page.getByTestId('amp-model-select').selectOption(model)
+  await page.getByTestId(`amp-model-${getAmpIdByName(model)}`).click()
 })
 
 When('I select the cabinet IR {string}', async ({ page }, ir: string) => {
@@ -72,7 +101,10 @@ When('I select the cabinet IR {string}', async ({ page }, ir: string) => {
 })
 
 Then('the amp model should be {string}', async ({ page }, model: string) => {
-  await expect(page.getByTestId('amp-model-select')).toHaveValue(model)
+  await expect(page.getByTestId('active-amp-model')).toHaveText(model)
+  await expect(page.getByTestId(`amp-model-${getAmpIdByName(model)}`)).toHaveClass(
+    /amp-model-card--active/,
+  )
 })
 
 Then('the cabinet IR should be {string}', async ({ page }, ir: string) => {

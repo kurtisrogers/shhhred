@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { AmbientBackground } from './components/AmbientBackground'
+import { AmpModelPicker } from './components/AmpModelPicker'
 import { FactoryPresetPicker } from './components/FactoryPresetPicker'
 import { Knob } from './components/Knob'
 import { MidiPanel } from './components/MidiPanel'
@@ -7,13 +8,13 @@ import { NamPlayer } from './components/NamPlayer'
 import { PresetManager } from './components/PresetManager'
 import { SpectrumVisualizer } from './components/SpectrumVisualizer'
 import {
-  AMP_MODEL_NAMES,
   CABINET_IR_NAMES,
   DEMO_INPUT_NAMES,
   DEFAULT_FACTORY_PRESET,
   FACTORY_PRESETS,
   type FactoryPreset,
 } from './data/factoryPresets'
+import type { AmpModel } from './data/catalog'
 import { useMidi } from './hooks/useMidi'
 import { createPreset, downloadPreset } from './lib/presets'
 import {
@@ -71,6 +72,11 @@ function App() {
     setFactoryPresetId(next.factoryPresetId)
   }
 
+  const applyAmpModel = (model: AmpModel) => {
+    setModelName(model.name)
+    setFactoryPresetId('')
+  }
+
   const handleSavePreset = () => {
     const preset = createPreset(
       presetName,
@@ -123,6 +129,8 @@ function App() {
           onSelect={applyPreset}
         />
 
+        <AmpModelPicker activeModelName={modelName} onSelect={applyAmpModel} />
+
         <section className="panel amp-panel" data-testid="amp-rack">
           <header className="panel__header">
             <h2>Amp Rack</h2>
@@ -130,6 +138,9 @@ function App() {
               {isPlaying ? 'Playing' : 'Ready'}
             </span>
           </header>
+          <p className="sr-only" data-testid="active-amp-model">
+            {modelName}
+          </p>
 
           <NamPlayer
             selectedModelName={modelName}
@@ -152,24 +163,7 @@ function App() {
             onLiveStart={() => setIsPlaying(true)}
           />
 
-          <div className="model-selectors model-selectors--three">
-            <label className="field">
-              <span>Amp Model</span>
-              <select
-                data-testid="amp-model-select"
-                value={modelName}
-                onChange={(event) => {
-                  setModelName(event.target.value)
-                  setFactoryPresetId('')
-                }}
-              >
-                {AMP_MODEL_NAMES.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <div className="model-selectors model-selectors--two">
             <label className="field">
               <span>Cabinet IR</span>
               <select

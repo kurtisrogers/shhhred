@@ -15,6 +15,7 @@ import {
   type NonEmptyArray,
 } from '../data/catalog'
 import type { EffectSettings } from '../types/preset'
+import { NamPlayerSync } from './NamPlayerSync'
 
 interface NamPlayerProps {
   selectedModelName: string
@@ -76,10 +77,19 @@ export function NamPlayer({
     })) as NonEmptyArray<Input>
   }, [selectedDemoInputName])
 
+  const playerKey = `${selectedModelName}|${selectedIrName}|${selectedDemoInputName}`
+
   return (
     <T3kPlayerProvider>
+      <NamPlayerSync
+        selectedModelName={selectedModelName}
+        selectedIrName={selectedIrName}
+        selectedDemoInputName={selectedDemoInputName}
+        effects={effects}
+      />
       <div className="nam-player-shell" data-testid="nam-player">
         <T3kPlayer
+          key={playerKey}
           models={models}
           irs={irs}
           inputs={inputs}

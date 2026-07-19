@@ -105,11 +105,12 @@ export const AMP_MODELS: NonEmptyArray<AmpModel> = [
     description: 'Brown-sound inspired saturation.',
   },
   {
-    id: 'laney-gh100s-iommi',
-    name: 'Laney GH100TI Iommi',
-    url: `${BASE}models/laney-gh100s-iommi.nam`,
+    id: 'laney-gh100ti',
+    name: 'Laney GH100TI',
+    url: `${BASE}models/laney-gh100ti.nam`,
     category: 'metal',
-    description: 'Tony Iommi signature Laney — dark, punchy Sabbath doom.',
+    description:
+      'Tony Iommi TI100 head — Adam D Killswitch Engage Incarnate rhythm tone.',
   },
 ]
 

@@ -1,11 +1,37 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig, type Plugin } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const base = process.env.GITHUB_PAGES === 'true' ? '/shhhred/' : '/'
 
+function wasmBasePathPlugin(): Plugin {
+  return {
+    name: 'wasm-base-path',
+    generateBundle(_options, bundle) {
+      for (const file of Object.values(bundle)) {
+        if (file.type !== 'chunk') {
+          continue
+        }
+
+        if (!file.code.includes('/t3k-wasm-module.js')) {
+          continue
+        }
+
+        file.code = file.code.replaceAll(
+          '`/t3k-wasm-module.js`',
+          '`${import.meta.env.BASE_URL}t3k-wasm-module.js`',
+        )
+        file.code = file.code.replaceAll(
+          "'/t3k-wasm-module.js'",
+          '`${import.meta.env.BASE_URL}t3k-wasm-module.js`',
+        )
+      }
+    },
+  }
+}
+
 export default defineConfig({
   base,
-  plugins: [react()],
+  plugins: [react(), wasmBasePathPlugin()],
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
