@@ -1,0 +1,42 @@
+:root {
+  color-scheme: dark;
+  font-family: 'Rajdhani', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #f4f7ff;
+  background: #070812;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #070812;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: #00f5d4;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+code {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85em;
+}
