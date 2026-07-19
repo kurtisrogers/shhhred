@@ -18,6 +18,7 @@ import {
 import type { DemoPlaybackSnapshot, SyncLoadingState } from '../lib/demoPlayerStatus'
 import type { EffectSettings } from '../types/preset'
 import { DemoPlaybackStatus } from './DemoPlaybackStatus'
+import { MobileStickyPlayer } from './MobileStickyPlayer'
 import { createPlayerMountKey } from '../lib/demoPlayerEngine'
 import { NAM_PLAYER_ID, NamPlayerSync } from './NamPlayerSync'
 
@@ -121,6 +122,12 @@ export function NamPlayer({
         onModelChange={onModelChange}
         onIrChange={onIrChange}
         onDemoInputChange={onDemoInputChange}
+      />
+      <MobileStickyPlayer
+        trackName={selectedDemoInputName}
+        modelName={selectedModelName}
+        syncLoading={syncState.loading}
+        errorMessage={syncError}
       />
     </T3kPlayerProvider>
   )

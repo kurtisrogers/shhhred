@@ -58,3 +58,9 @@ Feature: Shhhred Studio
     When I load the preset file
     Then the preset name should be "Arena Lead"
     And the amp model should be "Fender Deluxe Reverb"
+
+  Scenario: Mobile sticky player appears when browsing amp models
+    Given I open Shhhred Studio on a mobile viewport
+    When I start demo playback
+    And I scroll to the amp models section
+    Then the mobile sticky player should be visible
