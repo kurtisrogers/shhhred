@@ -152,6 +152,19 @@ Then('the demo playback status should be {string}', async ({ page }, label: stri
   await expect(page.getByTestId('demo-playback-phase-pill')).toHaveText(label)
 })
 
+Then('the demo audio source should contain {string}', async ({ page }, fragment: string) => {
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(() => {
+          const audio = document.querySelector('audio')
+          return audio?.currentSrc ?? audio?.src ?? ''
+        }),
+      { timeout: 20_000 },
+    )
+    .toContain(fragment)
+})
+
 Then('demo playback should be active', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible({
     timeout: 20_000,

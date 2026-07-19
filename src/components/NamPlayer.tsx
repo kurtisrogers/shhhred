@@ -18,6 +18,7 @@ import {
 import type { DemoPlaybackSnapshot } from '../lib/demoPlayerStatus'
 import type { EffectSettings } from '../types/preset'
 import { DemoPlaybackStatus } from './DemoPlaybackStatus'
+import { createPlayerMountKey } from '../lib/demoPlayerEngine'
 import { NAM_PLAYER_ID, NamPlayerSync } from './NamPlayerSync'
 
 interface NamPlayerProps {
@@ -51,32 +52,41 @@ export function NamPlayer({
     [onPlaybackStatusChange],
   )
   const models = useMemo((): NonEmptyArray<Model> => {
-    return AMP_MODELS.map((model) => ({
-      name: model.name,
-      url: model.url,
-      default: model.name === selectedModelName,
-    })) as NonEmptyArray<Model>
+    const selected =
+      AMP_MODELS.find((model) => model.name === selectedModelName) ?? AMP_MODELS[0]
+
+    return [
+      {
+        name: selected.name,
+        url: selected.url,
+        default: true,
+      },
+    ]
   }, [selectedModelName])
 
   const irs = useMemo((): NonEmptyArray<IR> => {
-    return CABINET_IRS.map((ir) => {
-      const selected = ir.name === selectedIrName
-      if (!selected) {
-        return { name: ir.name, url: ir.url, default: false }
-      }
+    const selected =
+      CABINET_IRS.find((ir) => ir.name === selectedIrName) ?? CABINET_IRS[0]
 
-      if (ir.name === 'None') {
-        return { name: ir.name, url: ir.url, default: true }
-      }
+    if (selected.name === 'None') {
+      return [
+        {
+          name: selected.name,
+          url: selected.url,
+          default: true,
+        },
+      ]
+    }
 
-      return {
-        name: ir.name,
-        url: ir.url,
+    return [
+      {
+        name: selected.name,
+        url: selected.url,
         default: true,
         mix: effects.reverbMix,
         gain: effects.reverbGain,
-      }
-    }) as NonEmptyArray<IR>
+      },
+    ]
   }, [effects.reverbGain, effects.reverbMix, selectedIrName])
 
   const inputs = useMemo((): NonEmptyArray<Input> => {
@@ -111,6 +121,7 @@ export function NamPlayer({
       />
       <NamPlayerSurface
         selectedDemoInputName={selectedDemoInputName}
+        selectedModelName={selectedModelName}
         models={models}
         irs={irs}
         inputs={inputs}
@@ -124,6 +135,7 @@ export function NamPlayer({
 
 interface NamPlayerSurfaceProps {
   selectedDemoInputName: string
+  selectedModelName: string
   models: NonEmptyArray<Model>
   irs: NonEmptyArray<IR>
   inputs: NonEmptyArray<Input>
@@ -134,6 +146,7 @@ interface NamPlayerSurfaceProps {
 
 function NamPlayerSurface({
   selectedDemoInputName,
+  selectedModelName,
   models,
   irs,
   inputs,
@@ -142,8 +155,11 @@ function NamPlayerSurface({
   onDemoInputChange,
 }: NamPlayerSurfaceProps) {
   const { audioState } = useT3kPlayerContext()
-  const playerKey =
-    audioState.initState === 'ready' ? NAM_PLAYER_ID : selectedDemoInputName
+  const playerKey = createPlayerMountKey(
+    audioState.initState,
+    selectedDemoInputName,
+    selectedModelName,
+  )
 
   return (
     <div className="nam-player-shell" data-testid="nam-player">
