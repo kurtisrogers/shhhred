@@ -2,20 +2,22 @@ import { describe, expect, it } from 'vitest'
 import { buildDemoInputs } from './demoInputs'
 
 const BASE = '/shhhred/'
-const NAM_DEMO_BASE =
-  'https://raw.githubusercontent.com/tone-3000/neural-amp-modeler-wasm/main/ui/public/inputs/'
 
 describe('buildDemoInputs', () => {
   const inputs = buildDemoInputs(BASE)
 
-  it('includes the full NAM guitar and bass library', () => {
-    expect(inputs).toHaveLength(34)
+  it('includes a curated set of bundled metal, rock, clean, and bass tracks', () => {
+    expect(inputs).toHaveLength(15)
 
-    const guitar = inputs.filter((input) => input.genre !== 'bass')
+    const metal = inputs.filter((input) => input.genre === 'metal')
+    const rock = inputs.filter((input) => input.genre === 'rock')
+    const clean = inputs.filter((input) => input.genre === 'blues')
     const bass = inputs.filter((input) => input.genre === 'bass')
 
-    expect(guitar).toHaveLength(28)
-    expect(bass).toHaveLength(6)
+    expect(metal).toHaveLength(10)
+    expect(rock).toHaveLength(3)
+    expect(clean).toHaveLength(1)
+    expect(bass).toHaveLength(1)
   })
 
   it('defaults to Mayer - Guitar', () => {
@@ -24,23 +26,25 @@ describe('buildDemoInputs', () => {
     expect(defaultInput?.url).toBe(`${BASE}inputs/mayer-guitar.wav`)
   })
 
-  it('serves bundled tracks locally and streams the rest from NAM', () => {
-    const localTracks = [
-      'Mayer - Guitar',
-      'Metalcore - Guitar',
-      'Fast Thrash - Guitar',
-      'Power Thrash - Guitar',
-      'Hammer Lead - Guitar',
-    ]
-
-    for (const name of localTracks) {
-      const input = inputs.find((track) => track.name === name)
-      expect(input?.url).toMatch(new RegExp(`^${BASE}inputs/`))
+  it('serves every track from the local bundle', () => {
+    for (const input of inputs) {
+      expect(input.url).toMatch(new RegExp(`^${BASE}inputs/[a-z0-9-]+\\.wav$`))
+      expect(input.url).not.toContain('githubusercontent.com')
     }
+  })
 
-    const remoteInput = inputs.find((track) => track.name === 'Brit - Guitar')
-    expect(remoteInput?.url).toBe(
-      `${NAM_DEMO_BASE}${encodeURIComponent('Brit - Guitar.wav')}`,
+  it('includes a strong metal selection', () => {
+    const metalNames = inputs
+      .filter((input) => input.genre === 'metal')
+      .map((input) => input.name)
+
+    expect(metalNames).toEqual(
+      expect.arrayContaining([
+        'Metalcore - Guitar',
+        'Decapitated - Guitar',
+        'Fast Thrash - Guitar',
+        'Hammer Lead - Guitar',
+      ]),
     )
   })
 
