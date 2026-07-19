@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const base = process.env.GITHUB_PAGES === 'true' ? '/shhhred/' : '/'
+const wasmModuleUrl = `${base}t3k-wasm-module.js`
 
 function wasmBasePathPlugin(): Plugin {
   return {
@@ -18,11 +19,11 @@ function wasmBasePathPlugin(): Plugin {
 
         file.code = file.code.replaceAll(
           '`/t3k-wasm-module.js`',
-          '`${import.meta.env.BASE_URL}t3k-wasm-module.js`',
+          JSON.stringify(wasmModuleUrl),
         )
         file.code = file.code.replaceAll(
           "'/t3k-wasm-module.js'",
-          '`${import.meta.env.BASE_URL}t3k-wasm-module.js`',
+          JSON.stringify(wasmModuleUrl),
         )
       }
     },

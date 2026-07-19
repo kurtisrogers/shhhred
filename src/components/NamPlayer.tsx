@@ -77,8 +77,6 @@ export function NamPlayer({
     })) as NonEmptyArray<Input>
   }, [selectedDemoInputName])
 
-  const playerKey = `${selectedModelName}|${selectedIrName}|${selectedDemoInputName}`
-
   return (
     <T3kPlayerProvider>
       <NamPlayerSync
@@ -89,7 +87,6 @@ export function NamPlayer({
       />
       <div className="nam-player-shell" data-testid="nam-player">
         <T3kPlayer
-          key={playerKey}
           models={models}
           irs={irs}
           inputs={inputs}
