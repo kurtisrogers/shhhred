@@ -130,6 +130,21 @@ When('I start demo playback', async ({ page }) => {
   await page.getByLabel('Play').click()
 })
 
+Then('I should see {int} demo tracks', async ({ page }, count: number) => {
+  await expect(page.getByTestId('demo-track-count')).toHaveText(`${count} tracks`)
+
+  const options = page.getByTestId('demo-input-select').locator('option')
+  await expect(options).toHaveCount(count)
+})
+
+When('I select the demo track {string}', async ({ page }, track: string) => {
+  await page.getByTestId('demo-input-select').selectOption(track)
+})
+
+Then('the demo track should be {string}', async ({ page }, track: string) => {
+  await expect(page.getByTestId('demo-input-select')).toHaveValue(track)
+})
+
 Then('demo playback should be active', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible({
     timeout: 20_000,

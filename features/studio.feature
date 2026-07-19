@@ -40,6 +40,11 @@ Feature: Shhhred Studio
     And I select the amp model "Fender Deluxe Reverb"
     Then demo playback should be active
 
+  Scenario: Demo track library is available
+    Then I should see 34 demo tracks
+    When I select the demo track "Brit - Guitar"
+    Then the demo track should be "Brit - Guitar"
+
   Scenario: Load a saved preset file
     Given I have a preset file named "arena-lead.shhhred.json"
     When I load the preset file

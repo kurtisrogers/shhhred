@@ -6,7 +6,12 @@ import { MidiPanel } from './components/MidiPanel'
 import { NamPlayer } from './components/NamPlayer'
 import { PresetManager } from './components/PresetManager'
 import { SpectrumVisualizer } from './components/SpectrumVisualizer'
-import { CABINET_IR_NAMES, DEMO_INPUT_NAMES } from './data/factoryPresets'
+import {
+  CABINET_IR_NAMES,
+  DEMO_BASS_INPUTS,
+  DEMO_GUITAR_INPUTS,
+  DEMO_INPUT_NAMES,
+} from './data/catalog'
 import type { AmpModel } from './data/catalog'
 import { useMidi } from './hooks/useMidi'
 import { createPreset, downloadPreset } from './lib/presets'
@@ -100,6 +105,9 @@ function App() {
         <section className="panel amp-panel" data-testid="amp-rack">
           <header className="panel__header">
             <h2>Demo Player</h2>
+            <span className="status-pill status-pill--on" data-testid="demo-track-count">
+              {DEMO_INPUT_NAMES.length} tracks
+            </span>
             <span className={`status-pill ${isPlaying ? 'status-pill--on' : ''}`}>
               {isPlaying ? 'Playing' : 'Ready'}
             </span>
@@ -109,9 +117,9 @@ function App() {
           </p>
 
           <p className="demo-audition-hint" data-testid="demo-audition-hint">
-            <strong>Demo audition</strong> — choose a DI track below, switch to the{' '}
-            <em>Demo</em> tab, and hit play. Swap amps or cabinets while the track
-            is running.
+            <strong>Demo audition</strong> — pick from {DEMO_INPUT_NAMES.length}{' '}
+            guitar and bass DI tracks below, switch to the <em>Demo</em> tab, and hit
+            play. Swap amps or cabinets while the track is running.
           </p>
 
           <NamPlayer
@@ -142,17 +150,26 @@ function App() {
               </select>
             </label>
             <label className="field">
-              <span>Demo Guitar</span>
+              <span>Demo Track</span>
               <select
                 data-testid="demo-input-select"
                 value={demoInputName}
                 onChange={(event) => setDemoInputName(event.target.value)}
               >
-                {DEMO_INPUT_NAMES.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
+                <optgroup label="Guitar">
+                  {DEMO_GUITAR_INPUTS.map((input) => (
+                    <option key={input.id} value={input.name}>
+                      {input.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Bass">
+                  {DEMO_BASS_INPUTS.map((input) => (
+                    <option key={input.id} value={input.name}>
+                      {input.name}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </label>
           </div>

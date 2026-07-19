@@ -47,6 +47,7 @@ describe('App', () => {
     expect(screen.getByTestId('midi-panel')).toBeInTheDocument()
     expect(screen.getByTestId('preset-panel')).toBeInTheDocument()
     expect(screen.getByTestId('demo-input-select')).toBeInTheDocument()
+    expect(screen.getByTestId('demo-track-count')).toHaveTextContent('34 tracks')
   })
 
   it('changes amp model selection', async () => {

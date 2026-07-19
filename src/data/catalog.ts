@@ -1,4 +1,5 @@
 import type { IR, Input, Model } from 'neural-amp-modeler-wasm'
+import { buildDemoInputs } from './demoInputs'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -133,39 +134,12 @@ export const CABINET_IRS: NonEmptyArray<CabinetIr> = [
   },
 ]
 
-export const DEMO_INPUTS: NonEmptyArray<DemoInput> = [
-  {
-    id: 'mayer-guitar',
-    name: 'Mayer - Guitar',
-    url: `${BASE}inputs/mayer-guitar.wav`,
-    default: true,
-    genre: 'rock',
-  },
-  {
-    id: 'metalcore-guitar',
-    name: 'Metalcore - Guitar',
-    url: `${BASE}inputs/metalcore-guitar.wav`,
-    genre: 'metal',
-  },
-  {
-    id: 'fast-thrash-guitar',
-    name: 'Fast Thrash - Guitar',
-    url: `${BASE}inputs/fast-thrash-guitar.wav`,
-    genre: 'metal',
-  },
-  {
-    id: 'power-thrash-guitar',
-    name: 'Power Thrash - Guitar',
-    url: `${BASE}inputs/power-thrash-guitar.wav`,
-    genre: 'metal',
-  },
-  {
-    id: 'hammer-lead-guitar',
-    name: 'Hammer Lead - Guitar',
-    url: `${BASE}inputs/hammer-lead-guitar.wav`,
-    genre: 'metal',
-  },
-]
+export const DEMO_INPUTS = buildDemoInputs(BASE)
+
+export const DEMO_GUITAR_INPUTS = DEMO_INPUTS.filter((input) => input.genre !== 'bass')
+export const DEMO_BASS_INPUTS = DEMO_INPUTS.filter((input) => input.genre === 'bass')
+export const DEMO_INPUT_NAMES = DEMO_INPUTS.map((input) => input.name)
+export const CABINET_IR_NAMES = CABINET_IRS.map((ir) => ir.name)
 
 export function getAmpByName(name: string): AmpModel | undefined {
   return AMP_MODELS.find((model) => model.name === name)
